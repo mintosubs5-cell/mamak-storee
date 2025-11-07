@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const fs = require('fs');
-const path = require('index.html');  // Tambahkan ini untuk path absolut
+const path = require('public/index.html');  // Tambahkan ini untuk path absolut
 
 const app = express();
 const PORT = 8000;
