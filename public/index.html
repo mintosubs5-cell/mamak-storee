@@ -36,7 +36,7 @@
         .review { background: rgba(0,0,0,0.1); padding: 10px; margin: 5px 0; border-radius: 5px; }
         .screenshots { display: flex; gap: 10px; margin: 10px 0; }
         .screenshots img { width: 100px; height: 60px; object-fit: cover; border-radius: 5px; }
-        .game-card button { margin: 5px; padding: 10px 15px; cursor: pointer; background: linear-gradient(45deg, #000000, #000000, #ffffff); color: white; border: none; border-radius: 20px; transition: transform 0.3s, box-shadow 0.3s; position: relative; }
+        .game-card button { margin: 5px; padding: 10px 15px; cursor: pointer; background: linear-gradient(45deg, #000000); color: white; border: none; border-radius: 20px; transition: transform 0.3s, box-shadow 0.3s; position: relative; }
         .game-card button:hover { transform: scale(1.05); box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
         .game-card button.loading { pointer-events: none; }
         .game-card button.loading::after { content: ''; position: absolute; width: 16px; height: 16px; margin: auto; border: 2px solid transparent; border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; top: 50%; left: 50%; transform: translate(-50%, -50%); }
@@ -687,10 +687,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        // In-memory data storage (embedded from server.js)
-        let users = [
-            { id: 1, username: 'admin', password: '$2a$10$FgisWgi.f05RgshHmuWcdeGnhxLOAbVRo945BzcdhRTdwcdb4qlnm', email: 'admin@mamakstore.com', verified: true, avatar: 'avatar1.png', balance: 1000000 } // Hashed '123'
-        ];
+// Removed embedded users data
 
         let games = [
             { id: 1, name: "Fortnite", img: "fortnite.png", desc: "Game battle royale dengan elemen membangun dan aksi cepat.", genre: ["battle-royale", "shooter", "action"], price: 0, releaseDate: "2017-07-25", developer: "Epic Games", platform: "PC, PS4, Xbox", rating: 4.5, sysReq: { min: "Minimum: Windows 7, 4GB RAM, GTX 660", rec: "Recommended: Windows 10, 8GB RAM, GTX 1060" }, screenshots: ["fortnite-ss1.png", "fortnite-ss2.png"], reviews: [], website: "https://www.epicgames.com/fortnite" },
