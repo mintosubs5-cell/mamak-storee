@@ -241,7 +241,13 @@ res.json({ success: true, library: userData[userId].library });
 app.get('/api/user-data/:userId', (req, res) => {
 const userId = req.params.userId;
 if (userData[userId]) {
-res.json({ success: true, data: userData[userId] });
+    const user = userData[userId];
+    // Populate cart with full game data
+    const populatedCart = user.cart.map(cartItem => {
+        const game = games.find(g => g.id === cartItem.gameId);
+        return game ? { ...cartItem, game } : cartItem;
+    });
+    res.json({ success: true, data: { ...user, cart: populatedCart } });
 } else {
 res.json({ success: true, data: { wishlist: [], library: [], cart: [] } });
 }
