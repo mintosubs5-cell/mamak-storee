@@ -46,6 +46,7 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/webstore'
 .catch(err => {
   console.error('MongoDB connection error:', err);
   console.log('Running in demo mode without database persistence');
+  // Don't exit process, continue with file-based fallback
 });
 
 // Middleware
