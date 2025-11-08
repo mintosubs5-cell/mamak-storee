@@ -20,7 +20,7 @@ app.use('/images', express.static('images'));
 // Load reviews from file
 let reviews = [];
 try {
-const data = fs.readFileSync('./reviews.json', 'utf8').replace(/^\uFEFF/, '');
+const data = fs.readFileSync(path.join(__dirname, 'reviews.json'), 'utf8').replace(/^\uFEFF/, '');
 reviews = JSON.parse(data);
 } catch (err) {
 console.error('Error loading reviews:', err);
@@ -30,7 +30,7 @@ reviews = [];
 // Load userData from file
 let userData = {};
 try {
-const data = fs.readFileSync('./userData.json', 'utf8').replace(/^\uFEFF/, '');
+const data = fs.readFileSync(path.join(__dirname, 'userData.json'), 'utf8').replace(/^\uFEFF/, '');
 userData = JSON.parse(data);
 } catch (err) {
 console.error('Error loading userData:', err);
@@ -41,12 +41,12 @@ userData = {};
 
 // Function to save reviews to file
 function saveReviews() {
-fs.writeFileSync('./reviews.json', JSON.stringify(reviews, null, 2));
+fs.writeFileSync(path.join(__dirname, 'reviews.json'), JSON.stringify(reviews, null, 2));
 }
 
 // Function to save userData to file
 function saveUserData() {
-fs.writeFileSync('./userData.json', JSON.stringify(userData, null, 2));
+fs.writeFileSync(path.join(__dirname, 'userData.json'), JSON.stringify(userData, null, 2));
 }
 
 // Serve the HTML file
