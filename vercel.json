@@ -1,19 +1,14 @@
 {
   "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "server.js",
-      "use": "@vercel/node"
+      "source": "/(.*)",
+      "destination": "/server.js"
     }
   ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/server.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/public/$1"
-    }
-  ]
+  "public": true,
+  "env": {
+    "MONGODB_URI": "@mongodb_uri",
+    "JWT_SECRET": "@jwt_secret"
+  }
 }
