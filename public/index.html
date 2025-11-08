@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mamak Store</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <style>
+        body { font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background: linear-gradient(135deg, #0c0c0c, #1a1a1a); color: white; }
+        nav { background: linear-gradient(135deg, #333, #555); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); border-radius: 0 0 15px 15px; }
+        nav a { color: white; margin: 0 15px; text-decoration: none; transition: color 0.3s; }
+        nav a:hover { color: #ff6b6b; }
+        .slide-in-left { animation: slideInLeft 0.5s ease; }
+        .slide-in-right { animation: slideInRight 0.5s ease; }
+        @keyframes slideInLeft { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .search-filter { margin: 20px 0; display: flex; gap: 10px; flex-wrap: wrap; }
+        .search-filter input, .search-filter select { padding: 8px; background: #333; color: white; border: 1px solid #555; }
+        .grid-wrapper { position: relative; overflow: hidden; margin-top: 20px; }
+        .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; position: relative; }
+        .slide-left { animation: slideLeft 0.5s ease; }
+        .slide-right { animation: slideRight 0.5s ease; }
+        @keyframes slideLeft { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideRight { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .game-card { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 15px; padding: 15px; text-align: center; transition: transform 0.3s, box-shadow 0.3s; backdrop-filter: blur(10px); position: relative; }
+        body.light-mode .game-card { background: rgba(0, 0, 0, 0.1); border: 1px solid rgba(0, 0, 0, 0.2); }
+        .game-card:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 8px 16px rgba(0,0,0,0.5); }
+        .game-card img { width: 100%; height: 150px; object-fit: cover; }
+        .game-card .rating { margin: 5px 0; }
+        .stars { color: gold; }
+        .review { background: rgba(0,0,0,0.1); padding: 10px; margin: 5px 0; border-radius: 5px; }
+        .screenshots { display: flex; gap: 10px; margin: 10px 0; }
+        .screenshots img { width: 100px; height: 60px; object-fit: cover; border-radius: 5px; }
+        .game-card button { margin: 5px; padding: 10px 15px; cursor: pointer; background: linear-gradient(45deg, #000000, #000000, #ffffff); color: white; border: none; border-radius: 20px; transition: transform 0.3s, box-shadow 0.3s; position: relative; }
+        .game-card button:hover { transform: scale(1.05); box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
+        .game-card button.loading { pointer-events: none; }
+        .game-card button.loading::after { content: ''; position: absolute; width: 16px; height: 16px; margin: auto; border: 2px solid transparent; border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .modal-sysreq { margin: 10px 0; }
+        .modal-sysreq p { margin: 5px 0; }
+        .modal-screenshots { display: flex; gap: 10px; margin: 10px 0; flex-wrap: wrap; }
+        .modal-screenshots img { width: 100px; height: 60px; object-fit: cover; border-radius: 5px; }
+        .modal-reviews { margin-top: 20px; }
+        @keyframes spin { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+        .banner { height: 250px; margin-top: 20px; margin-bottom: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); overflow: hidden; z-index: 0; }
+        .swiper-slide { background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.7); height: 250px; }
+        .swiper-slide h2 { margin: 0; font-size: 2em; }
+        .swiper-slide p { margin: 10px 0 0 0; font-size: 1.2em; }
+        .swiper-pagination { bottom: 10px; }
+        .swiper-button-next, .swiper-button-prev { color: white; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 2000; }
+        .modal-content { background: rgba(255, 255, 255, 0.1); padding: 20px; max-width: 600px; width: 90%; border-radius: 8px; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); max-height: 80%; overflow-y: auto; }
+        .pagination { margin-top: 20px; text-align: center; display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .pagination button { padding: 10px 15px; margin: 0; cursor: pointer; background: linear-gradient(45deg, #333, #555); color: white; border: none; border-radius: 25px; transition: all 0.4s ease; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.3); position: relative; overflow: hidden; }
+        .pagination button::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: left 0.5s; }
+        .pagination button:hover::before { left: 100%; }
+        .pagination button:hover { background: linear-gradient(45deg, #555, #777); transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.4), 0 0 20px rgba(255,255,255,0.3); }
+        .pagination button:active { transform: translateY(0); box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .pagination button.active { background: linear-gradient(45deg, #888, #aaa); box-shadow: 0 0 20px rgba(128,128,128,0.8), inset 0 0 10px rgba(255,255,255,0.2); }
+        .pagination button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .pagination .page-info { margin-top: 10px; font-size: 14px; color: #ccc; background: rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 15px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); }
+        .wishlist, .library, .cart { margin-top: 20px; }
+        .wishlist ul, .library ul, .cart ul { list-style: none; padding: 0; }
+        .wishlist li, .library li, .cart li { background: rgba(255, 255, 255, 0.1); padding: 10px; margin: 5px 0; border: 1px solid rgba(255, 255, 255, 0.2); display: flex; justify-content: space-between; backdrop-filter: blur(5px); }
+        .login-form { max-width: 400px; margin: 50px auto; background: rgba(255, 255, 255, 0.1); padding: 20px; border-radius: 8px; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .login-form input { width: 94.5%; padding: 10px; margin: 10px 0; background: #333; color: white; border: 1px solid #555; }
+        .login-form button { width: 100%; padding: 10px; background: #555; color: white; border: none; cursor: pointer; }
+        #login-btn { padding: 10px 20px; background: #000; color: white; border: none; border-radius: 5px; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; }
+        #login-btn:hover { transform: scale(1.1); box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
+        .modal-btn { padding: 12px 20px; background: linear-gradient(45deg, #333, #555); color: white; border: none; border-radius: 25px; cursor: pointer; transition: all 0.3s ease; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.3); position: relative; overflow: hidden; }
+        .modal-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: left 0.5s; }
+        .modal-btn:hover::before { left: 100%; }
+        .modal-btn:hover { background: linear-gradient(45deg, #555, #777); transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.4), 0 0 20px rgba(255,255,255,0.3); }
+        .buy-btn { background: linear-gradient(45deg, #ff0000, #cc0000); }
+        .buy-btn:hover { background: linear-gradient(45deg, #cc0000, #aa0000); box-shadow: 0 6px 12px rgba(0,0,0,0.4), 0 0 20px rgba(255,0,0,0.5); }
+        .tooltip { position: relative; display: inline-block; }
+        .tooltip .tooltiptext { visibility: hidden; width: 120px; background-color: #555; color: #fff; text-align: center; border-radius: 6px; padding: 5px; position: absolute; z-index: 1; bottom: 125%; left: 50%; margin-left: -60px; opacity: 0; transition: opacity 0.3s; }
+        .tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
+        .profile { display: flex; align-items: center; margin-bottom: 20px; }
+        .profile img { width: 50px; height: 50px; border-radius: 50%; margin-right: 10px; }
+        .reviews { margin-top: 20px; }
+        .review { background: rgba(0,0,0,0.1); padding: 10px; margin: 5px 0; border-radius: 5px; }
+        .newsletter { background: rgba(255,255,255,0.1); padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .newsletter input { padding: 8px; margin-right: 10px; border: none; border-radius: 4px; }
+        .newsletter button { padding: 8px 15px; background: #555; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        @media (max-width: 768px) { .game-grid { grid-template-columns: 1fr; } nav { flex-direction: column; } .search-filter { flex-direction: column; } .pagination { flex-direction: column; } }
+        @media (max-width: 480px) { body { padding: 10px; } .game-card { padding: 10px; } .modal-content { width: 95%; } }
+        footer { background: #333; color: white; text-align: center; padding: 20px; margin-top: 40px; border-top: 1px solid #555; }
+        footer p { margin: 0; font-size: 14px; }
+        footer a { color: #ccc; text-decoration: none; margin: 0 10px; }
+        footer a:hover { color: white; }
+        .notification { position: fixed; top: 20px; right: 20px; background: rgba(0, 0, 0, 0.8); color: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); z-index: 1000; opacity: 0; transform: translateY(-20px); transition: opacity 0.3s, transform 0.3s; max-width: 300px; }
+        .notification.show { opacity: 1; transform: translateY(0); }
+        .notification.success { background: rgba(0, 128, 0, 0.8); }
+        .notification.error { background: rgba(255, 0, 0, 0.8); }
+        .notification.info { background: rgba(0, 123, 255, 0.8); }
+
+        /* Contact Section Enhancements */
+        .contact-container {
+            display: flex;
+            gap: 30px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        .contact-form-card, .contact-info-card {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .contact-form-card:hover, .contact-info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+        .contact-form-card h3, .contact-info-card h3 {
+            color: #fff;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            text-align: center;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ccc;
+            font-size: 18px;
+            transition: color 0.3s ease;
+        }
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 15px 15px 15px 50px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+        .input-group input:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+        }
+        .input-group input:focus + i, .input-group textarea:focus + i {
+            color: #ff6b6b;
+        }
+        .contact-submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+        .contact-submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.5);
+        }
+        .contact-info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        .contact-info-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        .contact-info-item i {
+            font-size: 24px;
+            color: #ff6b6b;
+            margin-right: 15px;
+            min-width: 30px;
+        }
+        .contact-info-item div {
+            color: #fff;
+        }
+        .contact-info-item strong {
+            display: block;
+            font-size: 14px;
+            color: #ccc;
+            margin-bottom: 5px;
+        }
+        .contact-info-item a {
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .contact-info-item a:hover {
+            color: #ff6b6b;
+        }
+        .faq-section {
+            margin-top: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .faq-section h3 {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .faq-item {
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .faq-item:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        .faq-question {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            padding: 20px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 16px;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+        .faq-question:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .faq-question i {
+            transition: transform 0.3s ease;
+        }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .faq-answer p {
+            margin: 0;
+            padding: 20px;
+            color: #ccc;
+        }
+        .faq-item.active .faq-answer {
+            max-height: 200px;
+        }
+        .faq-item.active .faq-question i {
+            transform: rotate(180deg);
+        }
+        .social-links {
+            margin-top: 50px;
+            text-align: center;
+        }
+        .social-links h3 {
+            color: #fff;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .social-icon {
+            display: inline-block;
+            width: 60px;
+            height: 60px;
+            line-height: 60px;
+            text-align: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        .social-icon:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        .facebook:hover { background: linear-gradient(45deg, #1877f2, #42a5f5); border-color: #1877f2; }
+        .twitter:hover { background: linear-gradient(45deg, #1da1f2, #42a5f5); border-color: #1da1f2; }
+        .instagram:hover { background: linear-gradient(45deg, #e1306c, #f56040); border-color: #e1306c; }
+        .youtube:hover { background: linear-gradient(45deg, #ff0000, #ff4444); border-color: #ff0000; }
+        .discord:hover { background: linear-gradient(45deg, #5865f2, #7289da); border-color: #5865f2; }
+        .twitch:hover { background: linear-gradient(45deg, #9146ff, #b794f6); border-color: #9146ff; }
+
+        @media (max-width: 768px) {
+            .contact-container {
+                flex-direction: column;
+            }
+            .contact-form-card, .contact-info-card {
+                padding: 20px;
+            }
+            .social-icons {
+                gap: 15px;
+            }
+            .social-icon {
+                width: 50px;
+                height: 50px;
+                line-height: 50px;
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div style="display: flex; align-items: center;">
+            <img src="logo.png" alt="Mamak Store Logo" style="height: 55px; margin-right: 20px;">
+            <div>
+                <a href="#" onclick="showPage('home')">Home</a>
+                <a href="#" onclick="showPage('wishlist')">Wishlist</a>
+                <a href="#" onclick="showPage('library')">Library</a>
+                <a href="#" onclick="showPage('profile')">Profile</a>
+                <a href="#" onclick="showPage('contact')">Contact</a>
+
+            </div>
+        </div>
+        <div style="display: flex; align-items: center;">
+            <button onclick="showPage('cart')" style="background: none; border: none; color: white; font-size: 20px; margin-right: 10px; cursor: pointer;">🛒</button>
+            <button id="login-btn" onclick="showPage('login')">Login</button>
+        </div>
+    </nav>
+    <div class="container">
+        <div id="home" class="page">
+            <div class="banner swiper">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide" style="background-image: url('banners.png');">
+                        <h2>Welcome to Mamak Store</h2>
+                        <p>Discover the best games at unbeatable prices!</p>
+                    </div>
+                    <div class="swiper-slide" style="background-image: url('fortnite.png');">
+                        <h2>Battle Royale Madness</h2>
+                        <p>Join the ultimate battle royale experience!</p>
+                    </div>
+                    <div class="swiper-slide" style="background-image: url('cpunk.png');">
+                        <h2>Immerse in Cyberpunk</h2>
+                        <p>Explore the futuristic world of Night City.</p>
+                    </div>
+                    <div class="swiper-slide" style="background-image: url('gta5.png');">
+                        <h2>Open World Adventures</h2>
+                        <p>Experience freedom in vast open worlds.</p>
+                    </div>
+                </div>
+                <div class="swiper-pagination"></div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+            <div class="search-filter">
+                <input type="text" id="search" placeholder="Cari game..." onkeyup="filterGames()">
+                <select id="filter-genre" onchange="filterGames()">
+                    <option value="">Semua Genre</option>
+                    <option value="battle-royale">Battle Royale</option>
+                    <option value="rpg">RPG</option>
+                    <option value="sports">Sports</option>
+                    <option value="action">Action</option>
+                    <option value="moba">MOBA</option>
+                    <option value="shooter">Shooter</option>
+                    <option value="puzzle">Puzzle</option>
+                    <option value="adventure">Adventure</option>
+                    <option value="horror">Horror</option>
+                    <option value="fighting">Fighting</option>
+                    <option value="simulation">Simulation</option>
+                    <option value="strategy">Strategy</option>
+                    <option value="tactical">Tactical</option>
+                    <option value="hero-shooter">Hero Shooter</option>
+                    <option value="fantasy">Fantasy</option>
+                    <option value="story-rich">Story Rich</option>
+                    <option value="open-world">Open World</option>
+                    <option value="survival">Survival</option>
+                    <option value="casual">Casual</option>
+                    <option value="sci-fi">Sci-Fi</option>
+                    <option value="superhero">Superhero</option>
+                    <option value="farming">Farming</option>
+                    <option value="mythology">Mythology</option>
+                </select>
+                <select id="filter-price" onchange="filterGames()">
+                    <option value="">Semua Harga</option>
+                    <option value="free">Gratis</option>
+                    <option value="paid">Berbayar</option>
+                </select>
+                <select id="filter-platform" onchange="filterGames()">
+                    <option value="">Semua Platform</option>
+                </select>
+                <select id="filter-developer" onchange="filterGames()">
+                    <option value="">Semua Developer</option>
+                </select>
+                <select id="filter-rating" onchange="filterGames()">
+                    <option value="">Semua Rating</option>
+                    <option value="4">4+ Stars</option>
+                    <option value="3">3+ Stars</option>
+                    <option value="2">2+ Stars</option>
+                </select>
+                <select id="filter-release" onchange="filterGames()">
+                    <option value="">Semua Tanggal Rilis</option>
+                    <option value="2020+">2020+</option>
+                    <option value="2015-2019">2015-2019</option>
+                    <option value="before2015">Sebelum 2015</option>
+                </select>
+                <select id="sort" onchange="filterGames()">
+                    <option value="">Urutkan</option>
+                    <option value="name-asc">Nama A-Z</option>
+                    <option value="name-desc">Nama Z-A</option>
+                    <option value="price-asc">Harga Rendah-Tinggi</option>
+                    <option value="price-desc">Harga Tinggi-Rendah</option>
+                    <option value="rating-desc">Rating Tinggi-Rendah</option>
+                    <option value="release-desc">Terbaru</option>
+                    <option value="release-asc">Terlama</option>
+                </select>
+            </div>
+            <div class="game-grid" id="game-grid"></div>
+            <div class="pagination" id="pagination"></div>
+        </div>
+        <div id="login" class="page login-form" style="display: none;">
+            <h2>Login</h2>
+            <form onsubmit="handleLogin(event)">
+                <input type="text" id="username" placeholder="Username" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button type="submit">Login</button>
+            </form>
+            <p style="text-align: center; margin-top: 10px;">Demo: Username "admin", Password "123"</p>
+        </div>
+        <div id="register" class="page login-form" style="display: none;">
+            <h2>Register</h2>
+            <form onsubmit="handleRegister(event)">
+                <input type="text" id="reg-username" placeholder="Username" required>
+                <input type="email" id="reg-email" placeholder="Email" required>
+                <input type="password" id="reg-password" placeholder="Password" required>
+                <button type="submit">Register</button>
+            </form>
+            <p style="text-align: center; margin-top: 10px;"><a href="#" onclick="showPage('login')">Sudah punya akun? Login di sini</a></p>
+        </div>
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <span onclick="closeModal()" style="float: right; cursor: pointer; font-size: 20px;">&times;</span>
+                <h2 id="modal-title"></h2>
+                <img id="modal-img" src="" alt="" style="width: 100%; height: 200px; object-fit: cover;">
+                <p id="modal-desc"></p>
+                <p>Genre: <span id="modal-genre"></span></p>
+                <p>Developer: <span id="modal-developer"></span></p>
+                <p>Release Date: <span id="modal-releaseDate"></span></p>
+                <p>Platform: <span id="modal-platform"></span></p>
+                <p>Harga: Rp <span id="modal-price"></span></p>
+                <div class="modal-sysreq">
+                    <h3>System Requirements</h3>
+                    <p>Minimum: <span id="modal-sysreq-min"></span></p>
+                    <p>Recommended: <span id="modal-sysreq-rec"></span></p>
+                </div>
+                <div class="modal-screenshots">
+                    <h3>Screenshots</h3>
+                </div>
+                <div class="modal-reviews">
+                    <h3>Reviews <span id="review-count">(0)</span></h3>
+                    <div style="margin-bottom: 15px;">
+                        <select id="sort-reviews" onchange="sortReviews()">
+                            <option value="newest">Newest First</option>
+                            <option value="oldest">Oldest First</option>
+                            <option value="highest">Highest Rating</option>
+                            <option value="lowest">Lowest Rating</option>
+                        </select>
+                    </div>
+                    <div id="reviews-list" class="reviews-container"></div>
+                    <button id="load-more-reviews" onclick="loadMoreReviews()" style="display: none; margin: 10px 0; padding: 10px 20px; background: linear-gradient(45deg, #333, #555); color: white; border: none; border-radius: 25px; cursor: pointer;">Load More Reviews</button>
+                    <div id="add-review" style="margin-top: 20px; background: rgba(0,0,0,0.1); padding: 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2);">
+                        <h4 style="margin-bottom: 15px; color: #fff;">Add Your Review</h4>
+                        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                            <img src="default-avatar.png" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
+                            <input type="text" id="review-user" placeholder="Your Name" required style="flex: 1; padding: 8px; background: #333; color: white; border: 1px solid #555; border-radius: 5px;">
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <label style="color: #fff; margin-right: 10px;">Rating:</label>
+                            <div class="star-rating" id="star-rating">
+                                <span class="star" data-value="1">★</span>
+                                <span class="star" data-value="2">★</span>
+                                <span class="star" data-value="3">★</span>
+                                <span class="star" data-value="4">★</span>
+                                <span class="star" data-value="5">★</span>
+                            </div>
+                            <input type="hidden" id="review-rating" value="0">
+                        </div>
+                        <textarea id="review-comment" placeholder="Share your thoughts about this game..." rows="4" required style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px; resize: vertical;"></textarea>
+                        <button onclick="addReview()" style="margin-top: 10px; padding: 10px 20px; background: linear-gradient(45deg, #ff6b6b, #ee5a52); color: white; border: none; border-radius: 25px; cursor: pointer; transition: transform 0.3s;">Submit Review</button>
+                    </div>
+                </div>
+                <button class="modal-btn" onclick="addToWishlist(currentGame)">Add to Wishlist</button>
+                <button class="modal-btn" onclick="addToCart(currentGame)">Add to Cart</button>
+                <button class="modal-btn buy-btn" onclick="buyGame(currentGame)">Buy Now</button>
+            </div>
+        </div>
+        <div id="wishlist" class="page wishlist" style="display: none;">
+            <h2>Wishlist</h2>
+            <ul id="wishlist-list"></ul>
+        </div>
+        <div id="library" class="page library" style="display: none;">
+            <h2>Library</h2>
+            <ul id="library-list"></ul>
+        </div>
+        <div id="cart" class="page cart" style="display: none;">
+            <h2>Cart</h2>
+            <ul id="cart-list"></ul>
+            <p>Total: Rp <span id="cart-total">0</span></p>
+            <button onclick="checkout()">Checkout</button>
+        </div>
+        <div id="contact" class="page" style="display: none;">
+            <h2>Contact Us</h2>
+            <p>If you have any questions or need support, feel free to reach out to us!</p>
+            <div class="contact-container">
+                <div class="contact-form-card">
+                    <h3>Send us a Message</h3>
+                    <form onsubmit="handleContact(event)">
+                        <div class="input-group">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="contact-name" placeholder="Your Name" required>
+                        </div>
+                        <div class="input-group">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="contact-email" placeholder="Your Email" required>
+                        </div>
+                        <div class="input-group">
+                            <i class="fas fa-comment"></i>
+                            <textarea id="contact-message" placeholder="Your Message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="contact-submit-btn">Send Message</button>
+                    </form>
+                </div>
+                <div class="contact-info-card">
+                    <h3>Contact Information</h3>
+                    <div class="contact-info-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <strong>Email:</strong><br>
+                            <a href="mailto:support@mamakstore.com">support@mamakstore.com</a>
+                        </div>
+                    </div>
+                    <div class="contact-info-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <strong>Phone:</strong><br>
+                            <a href="tel:+62123456789">+62 123 456 789</a>
+                        </div>
+                    </div>
+                    <div class="contact-info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <strong>Address:</strong><br>
+                            Jl. Teknologi No. 123, Jakarta, Indonesia
+                        </div>
+                    </div>
+                    <div class="contact-info-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <strong>Business Hours:</strong><br>
+                            Mon-Fri: 9AM-6PM<br>
+                            Sat-Sun: 10AM-4PM
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="faq-section">
+                <h3>Frequently Asked Questions</h3>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        <span>How do I purchase a game?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>You can purchase games by adding them to your cart and proceeding to checkout. We accept various payment methods for your convenience.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Can I download games after purchase?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes, after purchase, games will be available in your Library section. You can access and download them from there.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        <span>How do I add a review?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Click on "View Details" for any game, scroll down to the reviews section, and use the "Add Your Review" form to submit your feedback.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        <span>What if I have technical issues?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Contact our support team via email or phone. We'll be happy to help you resolve any technical issues you encounter.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="social-links">
+                <h3>Follow Us</h3>
+                <div class="social-icons">
+                    <a href="#" class="social-icon facebook" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-icon twitter" title="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-icon instagram" title="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-icon youtube" title="YouTube"><i class="fab fa-youtube"></i></a>
+                    <a href="#" class="social-icon discord" title="Discord"><i class="fab fa-discord"></i></a>
+                    <a href="#" class="social-icon twitch" title="Twitch"><i class="fab fa-twitch"></i></a>
+                </div>
+            </div>
+        </div>
+        <div id="profile" class="page" style="display: none;">
+            <h2>Profile</h2>
+            <div id="profile-info">
+                <img id="profile-avatar" src="" alt="Avatar" style="width: 100px; height: 100px; border-radius: 50%; cursor: pointer;" onclick="changeAvatar()">
+                <p><strong>Username:</strong> <span id="profile-username"></span></p>
+                <p><strong>Email:</strong> <span id="profile-email"></span></p>
+                <p><strong>Verified:</strong> <span id="profile-verified"></span></p>
+                <p><strong>Balance:</strong> Rp <span id="profile-balance"></span></p>
+                <button onclick="changeAvatar()">Change Avatar</button>
+            </div>
+            <h3>Purchase History</h3>
+            <ul id="profile-library"></ul>
+            <h3>Recommended for You</h3>
+            <div id="recommendations" class="game-grid"></div>
+        </div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top" onclick="scrollToTop()" style="display: none; position: fixed; bottom: 20px; right: 20px; background: linear-gradient(45deg, #333, #555); color: white; border: none; border-radius: 50%; width: 50px; height: 50px; font-size: 20px; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.3); transition: transform 0.3s, box-shadow 0.3s; z-index: 1000;">
+        ↑
+    </button>
+
+    <footer>
+        <p>&copy; 2025 Mamak Store. All rights reserved.</p>
+        <div style="margin: 10px 0;">
+            <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
+            <a href="#" title="Discord"><i class="fab fa-discord"></i></a>
+            <a href="#" title="Twitch"><i class="fab fa-twitch"></i></a>
+        </div>
+        <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a> | <a href="#">Contact Us</a>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        // In-memory data storage (embedded from server.js)
+        let users = [
+            { id: 1, username: 'admin', password: '$2a$10$FgisWgi.f05RgshHmuWcdeGnhxLOAbVRo945BzcdhRTdwcdb4qlnm', email: 'admin@mamakstore.com', verified: true, avatar: 'avatar1.png', balance: 1000000 } // Hashed '123'
+        ];
+
+        let games = [
+            { id: 1, name: "Fortnite", img: "fortnite.png", desc: "Game battle royale dengan elemen membangun dan aksi cepat.", genre: ["battle-royale", "shooter", "action"], price: 0, releaseDate: "2017-07-25", developer: "Epic Games", platform: "PC, PS4, Xbox", rating: 4.5, sysReq: { min: "Minimum: Windows 7, 4GB RAM, GTX 660", rec: "Recommended: Windows 10, 8GB RAM, GTX 1060" }, screenshots: ["fortnite-ss1.png", "fortnite-ss2.png"], reviews: [], website: "https://www.epicgames.com/fortnite" },
+            { id: 2, name: "Rocket League", img: "rl.png", desc: "Pertandingan sepak bola menggunakan mobil roket.", genre: ["sports", "action", "arcade"], price: 0, releaseDate: "2015-07-07", developer: "Psyonix", platform: "PC, PS4, Xbox", rating: 4.2, sysReq: { min: "Minimum: Windows 7, 4GB RAM, GTX 650", rec: "Recommended: Windows 10, 8GB RAM, GTX 1060" }, screenshots: ["rl-ss1.png", "rl-ss2.png"], reviews: [], website: "https://www.rocketleague.com" },
+            { id: 3, name: "Apex Legends", img: "apex.png", desc: "Battle royale tim dengan karakter unik dan kemampuan khusus.", genre: ["battle-royale", "shooter", "action"], price: 0, releaseDate: "2019-02-04", developer: "Respawn Entertainment", platform: "PC, PS4, Xbox", rating: 4.3, sysReq: { min: "Minimum: Windows 7, 8GB RAM, GTX 640", rec: "Recommended: Windows 10, 16GB RAM, RTX 2060" }, screenshots: ["apex-ss1.png", "apex-ss2.png"], reviews: [], website: "https://www.ea.com/games/apex-legends" },
+            { id: 4, name: "Cyberpunk 2077", img: "cpunk.png", desc: "RPG dunia terbuka bertema futuristik di kota Night City.", genre: ["rpg", "action", "adventure"], price: 69999, releaseDate: "2020-12-10", developer: "CD Projekt Red", platform: "PC, PS4, Xbox", rating: 3.8, sysReq: { min: "Minimum: Windows 10, 12GB RAM, GTX 970", rec: "Recommended: Windows 10, 16GB RAM, RTX 2060" }, screenshots: ["cpunk-ss1.png", "cpunk-ss2.png"], reviews: [], website: "https://www.cyberpunk.net" },
+            { id: 5, name: "The Witcher 3", img: "tww.png", desc: "RPG epik tentang pemburu monster bernama Geralt of Rivia.", genre: ["rpg", "adventure", "action"], price: 359999, releaseDate: "2015-05-19", developer: "CD Projekt Red", platform: "PC, PS4, Xbox", rating: 4.9, sysReq: { min: "Minimum: Windows 7, 6GB RAM, GTX 660", rec: "Recommended: Windows 10, 8GB RAM, GTX 1060" }, screenshots: ["tww-ss1.png", "tww-ss2.png"], reviews: [], website: "https://www.thewitcher.com" },
+            { id: 6, name: "FIFA 23", img: "fifa23.png", desc: "Simulasi sepak bola realistis dengan tim dan liga resmi.", genre: ["sports", "simulation"], price: 400000, releaseDate: "2022-09-30", developer: "EA Sports", platform: "PC, PS4, Xbox", rating: 4.1, sysReq: { min: "Minimum: Windows 10, 8GB RAM, GTX 660", rec: "Recommended: Windows 10, 16GB RAM, RTX 2060" }, screenshots: ["fifa23-ss1.png", "fifa23-ss2.png"], reviews: [], website: "https://www.ea.com/games/fifa/fifa-23" },
+            { id: 7, name: "GTA V", img: "gta5.png", desc: "Aksi dunia terbuka dengan kebebasan bermain tinggi di Los Santos.", genre: ["action", "adventure", "open-world"], price: 439000, releaseDate: "2013-09-17", developer: "Rockstar Games", platform: "PC, PS4, Xbox", rating: 4.8, sysReq: { min: "Minimum: Windows 8.1, 4GB RAM, GTX 660", rec: "Recommended: Windows 10, 8GB RAM, GTX 1060" }, screenshots: ["gta5-ss1.png", "gta5-ss2.png"], reviews: [], website: "https://www.rockstargames.com/gta-v" },
+            { id: 8, name: "Dota 2", img: "dota2.png", desc: "Pertarungan MOBA 5v5 dengan hero unik dan strategi kompleks.", genre: ["moba", "strategy"], price: 0, releaseDate: "2013-07-09", developer: "Valve", platform: "PC", rating: 4.4, sysReq: { min: "Minimum: Windows 7, 4GB RAM, Integrated Graphics", rec: "Recommended: Windows 10, 8GB RAM, GTX 1060" }, screenshots: ["dota2-ss1.png", "dota2-ss2.png"], reviews: [], website: "https://www.dota2.com" },
+            { id: 9, name: "Counter-Strike 2", img: "cs2.png", desc: "Shooter taktis antara tim teroris dan counter-teroris.", genre: ["shooter", "tactical", "action"], price: 0, releaseDate: "2023-09-27", developer: "Valve", platform: "PC", rating: 4.6, sysReq: { min: "Minimum: Windows 10, 8GB RAM, GTX 730", rec: "Recommended: Windows 10, 16GB RAM, RTX 2060" }, screenshots: ["cs2-ss1.png", "cs2-ss2.png"], reviews: [], website: "https://www.counter-strike.net" },
+            { id: 10, name: "Valorant", img: "valorant.png", desc: "Shooter taktis 5v5 dengan agen yang punya kemampuan unik.", genre: ["shooter", "tactical", "hero-shooter"], price: 0, releaseDate: "2020-06-02", developer: "Riot Games", platform: "PC", rating: 4.5, sysReq: { min: "Minimum: Windows 7, 4GB RAM, GTX 300", rec: "Recommended: Windows 10, 8GB RAM, GTX 1060" }, screenshots: ["valorant-ss1.png", "valorant-ss2.png"], reviews: [], website: "https://playvalorant.com" },
+            { id: 11, name: "Overwatch 2", img: "overwatch2.png", desc: "Shooter berbasis tim dengan karakter dan kemampuan spesial.", genre: ["shooter", "hero-shooter", "action"], price: 0, releaseDate: "2022-10-04", developer: "Blizzard Entertainment", platform: "PC, PS4, Xbox", rating: 4.0, sysReq: { min: "Minimum: Windows 7, 4GB RAM, GTX 660", rec: "Recommended: Windows 10, 8GB RAM, GTX 1060" }, screenshots: ["overwatch2-ss1.png", "overwatch2-ss2.png"], reviews: [], website: "https://overwatch.blizzard.com" },
+            { id: 12, name: "PUBG: BATTLEGROUNDS", img: "pubg.png", desc: "Battle royale realistis dengan 100 pemain di satu arena.", genre: ["battle-royale", "shooter", "survival"], price: 0, releaseDate: "2017-12-20", developer: "PUBG Corporation", platform: "PC, Mobile", rating: 4.2, sysReq: { min: "Minimum: Windows 7, 8GB RAM, GTX 960", rec: "Recommended: Windows 10, 16GB RAM, RTX 2060" }, screenshots: ["pubg-ss1.png", "pubg-ss2.png"], reviews: [], website: "https://pubg.com" },
+            { id: 13, name: "Battlefield 8", img: "battlefield8.png", desc: "Shooter skala besar dengan kendaraan dan pertempuran realistis.", genre: ["shooter", "war", "action"], price: 0, releaseDate: "2021-06-09", developer: "DICE", platform: "PC, PS4, Xbox", rating: 3.9, sysReq: { min: "Minimum: Windows 10, 8GB RAM, GTX 1050", rec: "Recommended: Windows 10, 16GB RAM, RTX 2060" }, screenshots: ["battlefield8-ss1.png", "battlefield8-ss2.png"], reviews: [], website: "https://www.ea.com/games/battlefield" },
+            { id: 14, name: "Repo", img: "repo.png", desc: "Game aksi taktis dengan elemen sci-fi dan misi penyelamatan.", genre: ["action", "sci-fi", "tactical"], price: 0, releaseDate: "2023-01-15", developer: "Unknown", platform: "PC", rating: 3.5, sysReq: { min: "Minimum: Windows 10, 8GB RAM, GTX 1060", rec: "Recommended: Windows 10, 16GB RAM, RTX 2060" }, screenshots: ["repo-ss1.png", "repo-ss2.png"], reviews: [], website: "#" },
+            { id: 15, name: "Peak", img: "peak.png", desc: "Game puzzle santai yang melatih otak dengan mini game beragam.", genre: ["puzzle", "education", "casual"], price: 0, releaseDate: "2022-05-10", developer: "Unknown", platform: "PC, Mobile", rating: 4.0, sysReq: { min: "Minimum: Windows 7, 2GB RAM, Integrated Graphics", rec: "Recommended: Windows 10, 4GB RAM, GTX 650" }, screenshots: ["peak-ss1.png", "peak-ss2.png"], reviews: [], website: "#" },
+            { id: 16, name: "NBA 2K26", img: "nba2k26.png", desc: "Simulasi basket dengan gameplay realistis dan mode karier.", genre: ["sports", "simulation"], price: 0, releaseDate: "2024-09-06", developer: "Visual Concepts", platform: "PC, PS4, Xbox", rating: 4.3, sysReq: { min: "Minimum: Windows 10, 8GB RAM, GTX 780", rec: "Recommended: Windows 10, 16GB RAM, RTX 2060" }, screenshots: ["nba2k26-ss1.png", "nba2k26-ss2.png"], reviews: [], website: "https://www.nba2k.com" },
+            { id: 17, name: "Red Dead Redemption 2", img: "rdr2.png", desc: "Petualangan open-world bertema koboi di Amerika Barat.", genre: ["adventure", "action", "open-world"], price: 0, releaseDate: "2018-10-26", developer: "Rockstar Studios", platform: "PC, PS4, Xbox", rating: 4.9, sysReq: { min: "Minimum: Windows 7, 8GB RAM, GTX 770", rec: "Recommended: Windows 10, 16GB RAM, RTX 2060" }, screenshots: ["rdr2-ss1.png", "rdr2-ss2.png"], reviews: [], website: "https://www.rockstargames.com/reddeadredemption2" },
+            { id: 18, name: "Marvel Rivals", img: "marvelrivals.png", desc: "Shooter tim dengan karakter superhero Marvel.", genre: ["shooter", "action", "superhero"], price: 0, releaseDate: "2024-12-06", developer: "NetEase", platform: "PC", rating: 4.1, sysReq: { min: "Minimum: Windows 10, 8GB RAM, GTX 1060", rec: "Recommended: Windows 10, 16GB RAM, RTX 2060" }, screenshots: ["marvelrivals-ss1.png", "marvelrivals-ss2.png"], reviews: [], website: "https://marvelrivals.com" },
+            { id: 19, name: "Dead by Daylight", img: "dbd.png", desc: "Horror asimetris: satu pembunuh melawan empat penyintas.", genre: ["horror", "multiplayer", "survival"], price: 0, releaseDate: "2016-06-14", developer: "Behaviour Interactive", platform: "PC, PS4, Xbox", rating: 4.2, sysReq: { min: "Minimum: Windows 7, 8GB RAM, GTX 460", rec: "Recommended: Windows 10, 16GB RAM, GTX 1060" }, screenshots: ["dbd-ss1.png", "dbd-ss2.png"], reviews: [], website: "https://deadbydaylight.com" },
+            { id: 20, name: "Tekken 8", img: "tekken8.png", desc: "Pertarungan 3D cepat dengan karakter ikonik dan kombo mematikan.", genre: ["fighting", "action", "arcade"], price: 0, releaseDate: "2024-01-26", developer: "Bandai Namco", platform: "PC, PS4, Xbox", rating: 4.4, sysReq: { min: "Minimum: Windows 10, 8GB RAM, GTX 1050", rec: "Recommended: Windows 10, 16GB RAM, RTX 2060" }, screenshots: ["tekken8-ss1.png", "tekken8-ss2.png"], reviews: [], website: "https://www.tekken.com" },
+            { id: 21, name: "Resident Evil 4", img: "re4.png", desc: "Aksi horor bertahan hidup melawan wabah bioweapon di desa misterius.", genre: ["horror", "action", "survival"], price: 0, releaseDate: "2023-03-24", developer: "Capcom", platform: "PC, PS4, Xbox", rating: 4.7, sysReq: { min: "Minimum: Windows 10, 8GB RAM, GTX 1060", rec: "Recommended: Windows 10, 16GB RAM, RTX 2060" }, screenshots: ["re4-ss1.png", "re4-ss2.png"], reviews: [], website: "https://www.residentevil.com" },
+            { id: 22, name: "Elden Ring", img: "eldenring.png", desc: "RPG dunia terbuka dengan pertarungan menantang dan dunia gelap.", genre: ["rpg", "action", "adventure"], price: 0, releaseDate: "2022-02-25", developer: "FromSoftware", platform: "PC, PS4, Xbox", rating: 4.8, sysReq: { min: "Minimum: Windows 10, 12GB RAM, GTX 1060", rec: "Recommended: Windows 10, 16GB RAM, RTX 2060" }, screenshots: ["eldenring-ss1.png", "eldenring-ss2.png"], reviews: [], website: "https://eldenring.bn-ent.net" },
+            { id: 23, name: "Black Myth: Wukong", img: "wukong.png", desc: "Action RPG berdasarkan legenda Sun Wukong dengan grafis epik.", genre: ["rpg", "action", "fantasy"], price: 0, releaseDate: "2024-08-20", developer: "Game Science", platform: "PC, PS4, Xbox", rating: 4.6, sysReq: { min: "Minimum: Windows 10, 16GB RAM, RTX 2060", rec: "Recommended: Windows 10, 32GB RAM, RTX 3080" }, screenshots: ["wukong-ss1.png", "wukong-ss2.png"], reviews: [], website: "https://www.blackmythwukong.com" },
+            { id: 24, name: "Dying Light", img: "dyinglight.png", desc: "Aksi parkour dan bertahan hidup di dunia penuh zombie.", genre: ["action", "horror", "survival"], price: 0, releaseDate: "2015-01-27", developer: "Techland", platform: "PC, PS4, Xbox", rating: 4.3, sysReq: { min: "Minimum: Windows 7, 4GB RAM, GTX 560", rec: "Recommended: Windows 10, 8GB RAM, GTX 1060" }, screenshots: ["dyinglight-ss1.png", "dyinglight-ss2.png"], reviews: [], website: "https://dyinglightgame.com" },
+            { id: 25, name: "The Legend of Zelda: Ocarina of Time", img: "zelda.png", desc: "Petualangan klasik dengan eksplorasi dan teka-teki di Hyrule.", genre: ["adventure", "rpg", "fantasy"], price: 0, releaseDate: "1998-11-21", developer: "Nintendo", platform: "Nintendo 64", rating: 4.9, sysReq: { min: "N/A", rec: "N/A" }, screenshots: ["zelda-ss1.png", "zelda-ss2.png"], reviews: [], website: "https://www.zelda.com" },
+            { id: 26, name: "Baldur's Gate 3", img: "bg3.png", desc: "RPG berbasis D&D dengan pilihan moral dan narasi mendalam.", genre: ["rpg", "fantasy", "story-rich"], price: 0, releaseDate: "2023-08-03", developer: "Larian Studios", platform: "PC, PS4, Xbox", rating: 4.9, sysReq: { min: "Minimum: Windows 10, 8GB RAM, GTX 1060", rec: "Recommended: Windows 10, 16GB RAM, RTX 2060" }, screenshots: ["bg3-ss1.png", "bg3-ss2.png"], reviews: [], website: "https://baldursgate3.game" },
+            { id: 27, name: "Uncharted 2: Among Thieves", img: "uncharted2.png", desc: "Aksi petualangan sinematik dengan kisah harta karun dan misteri.", genre: ["adventure", "action", "story-rich"], price: 0, releaseDate: "2009-10-13", developer: "Naughty Dog", platform: "PS3", rating: 4.8, sysReq: { min: "PS3 Hardware", rec: "PS3 Hardware" }, screenshots: ["uncharted2-ss1.png", "uncharted2-ss2.png"], reviews: [], website: "https://www.playstation.com" },
+            { id: 28, name: "Stardew Valley", img: "stardew.png", desc: "Simulasi kehidupan dan bertani di desa yang damai.", genre: ["simulation", "casual", "farming"], price: 0, releaseDate: "2016-02-26", developer: "ConcernedApe", platform: "PC, Mobile", rating: 4.7, sysReq: { min: "Minimum: Windows Vista, 2GB RAM, Integrated Graphics", rec: "Recommended: Windows 10, 4GB RAM, GTX 650" }, screenshots: ["stardew-ss1.png", "stardew-ss2.png"], reviews: [], website: "https://www.stardewvalley.net" },
+            { id: 29, name: "Mass Effect 2", img: "masseffect2.png", desc: "RPG sci-fi dengan cerita mendalam dan pilihan yang memengaruhi jalan cerita.", genre: ["rpg", "sci-fi", "action"], price: 0, releaseDate: "2010-01-26", developer: "BioWare", platform: "PC, PS3, Xbox", rating: 4.6, sysReq: { min: "Minimum: Windows XP, 1GB RAM, GTX 260", rec: "Recommended: Windows 7, 4GB RAM, GTX 650" }, screenshots: ["masseffect2-ss1.png", "masseffect2-ss2.png"], reviews: [], website: "https://masseffect.bioware.com" },
+            { id: 30, name: "God of War: Ragnarok", img: "gowr.png", desc: "Aksi epik Kratos dan Atreus melawan para dewa Nordik.", genre: ["action", "adventure", "mythology"], price: 0, releaseDate: "2022-11-09", developer: "Santa Monica Studio", platform: "PC, PS4, PS5", rating: 4.9, sysReq: { min: "Minimum: Windows 10, 8GB RAM, GTX 1070", rec: "Recommended: Windows 10, 16GB RAM, RTX 2060" }, screenshots: ["gowr-ss1.png", "gowr-ss2.png"], reviews: [], website: "https://www.playstation.com/en-us/games/god-of-war-ragnarok" }
+        ];
+
+        let userData = JSON.parse(localStorage.getItem('userData')) || {}; // { userId: { wishlist: [], library: [], cart: [{ gameId, quantity }] } }
+
+        // Helper functions for API simulation
+        async function bcryptCompare(password, hash) {
+            // Simple mock for bcrypt, since we can't use bcrypt in browser
+            // In real scenario, use a library or server
+            return password === '123' && hash === '$2a$10$FgisWgi.f05RgshHmuWcdeGnhxLOAbVRo945BzcdhRTdwcdb4qlnm';
+        }
+
+        async function bcryptHash(password) {
+            // Mock hash
+            return '$2a$10$' + Math.random().toString(36).substr(2, 53);
+        }
+
+        function generateToken() {
+            return Math.random().toString(36).substr(2) + Date.now().toString(36);
+        }
+
+        // Simulated API functions
+        async function apiLogin(username, password) {
+            const user = users.find(u => u.username === username);
+            if (user && await bcryptCompare(password, user.password)) {
+                const token = generateToken();
+                localStorage.setItem('token', token);
+                localStorage.setItem('userId', user.id);
+                return { success: true, token, user: { id: user.id, username: user.username, email: user.email, avatar: user.avatar, balance: user.balance } };
+            } else {
+                throw new Error('Invalid credentials');
+            }
+        }
+
+        async function apiRegister(username, email, password) {
+            if (users.find(u => u.username === username || u.email === email)) {
+                throw new Error('User already exists');
+            } else {
+                const hashedPassword = await bcryptHash(password);
+                const newUser = { id: users.length + 1, username, email, password: hashedPassword, verified: true, avatar: 'default-avatar.png', balance: 0 };
+                users.push(newUser);
+                return { success: true, message: 'Registration successful.' };
+            }
+        }
+
+        function apiGetUser(token) {
+            const userId = localStorage.getItem('userId');
+            const user = users.find(u => u.id == userId);
+            if (user) {
+                return { success: true, user: { id: user.id, username: user.username, email: user.email, avatar: user.avatar, verified: user.verified, balance: user.balance } };
+            } else {
+                throw new Error('User not found');
+            }
+        }
+
+        function apiUpdateAvatar(avatar) {
+            const userId = localStorage.getItem('userId');
+            const user = users.find(u => u.id == userId);
+            if (user) {
+                user.avatar = avatar;
+                return { success: true, avatar };
+            } else {
+                throw new Error('User not found');
+            }
+        }
+
+        function apiGetRecommendations(userId) {
+            const userInfo = userData[userId];
+            if (!userInfo) return { success: true, recommendations: [] };
+
+            const userGenres = new Set();
+            const userGames = [...userInfo.library, ...userInfo.wishlist];
+            userGames.forEach(gameId => {
+                const game = games.find(g => g.id === gameId);
+                if (game) game.genre.forEach(genre => userGenres.add(genre));
+            });
+
+            const recommendations = games.filter(game =>
+                !userGames.includes(game.id) &&
+                game.genre.some(genre => userGenres.has(genre))
+            ).slice(0, 5);
+
+            return { success: true, recommendations };
+        }
+
+        function apiAddReview(gameId, user, rating, comment) {
+            const game = games.find(g => g.id === parseInt(gameId));
+            if (game) {
+                game.reviews.push({ user, rating: parseFloat(rating), comment });
+                return { success: true, reviews: game.reviews };
+            } else {
+                throw new Error('Game not found');
+            }
+        }
+
+        function apiGetUserData(userId) {
+            return { success: true, data: userData[userId] || { wishlist: [], library: [], cart: [] } };
+        }
+
+        function saveUserData() {
+            localStorage.setItem('userData', JSON.stringify(userData));
+        }
+
+        let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+        let library = JSON.parse(localStorage.getItem('library')) || [];
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let currentGame = null;
+        let currentPage = 1;
+        let previousPage = 1;
+        const gamesPerPage = 8;
+        let filteredGames = games;
+        let user = localStorage.getItem('user') || null;
+        let currentPageId = 'home';
+        let currentReviewsShown = 5;
+        const reviewsPerBatch = 5;
+
+        // Populate filter selects
+        function populateFilters() {
+            const platforms = new Set();
+            const developers = new Set();
+            games.forEach(game => {
+                game.platform.split(', ').forEach(p => platforms.add(p.trim()));
+                developers.add(game.developer);
+            });
+            const platformSelect = document.getElementById('filter-platform');
+            platforms.forEach(p => {
+                const option = document.createElement('option');
+                option.value = p;
+                option.textContent = p;
+                platformSelect.appendChild(option);
+            });
+            const developerSelect = document.getElementById('filter-developer');
+            developers.forEach(d => {
+                const option = document.createElement('option');
+                option.value = d;
+                option.textContent = d;
+                developerSelect.appendChild(option);
+            });
+        }
+
+        // Fungsi menampilkan halaman
+        function showPage(page) {
+            const pageOrder = ['home', 'wishlist', 'library', 'cart', 'contact', 'profile', 'login', 'register'];
+            const currentIndex = pageOrder.indexOf(currentPageId);
+            const newIndex = pageOrder.indexOf(page);
+            document.querySelectorAll('.page').forEach(p => {
+                p.style.display = 'none';
+                p.classList.remove('slide-in-left', 'slide-in-right');
+            });
+            const targetPage = document.getElementById(page);
+            targetPage.style.display = 'block';
+            if (newIndex > currentIndex) {
+                targetPage.classList.add('slide-in-left');
+            } else {
+                targetPage.classList.add('slide-in-right');
+            }
+            setTimeout(() => {
+                targetPage.classList.remove('slide-in-left', 'slide-in-right');
+            }, 500);
+            currentPageId = page;
+            if (page === 'home') displayGames();
+            else if (page === 'wishlist') updateWishlist();
+            else if (page === 'library') updateLibrary();
+            else if (page === 'cart') updateCart();
+            else if (page === 'profile') updateProfile();
+        }
+
+        // Fungsi handle login
+        async function handleLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    user = data.user.username;
+                    localStorage.setItem('user', user);
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('userId', data.user.id);
+                    // Load user-specific data
+                    const userDataResponse = await fetch('/api/user-data/' + data.user.id);
+                    const userData = await userDataResponse.json();
+                    if (userData.success) {
+                        library = userData.data.library.map(gameId => games.find(g => g.id === gameId)).filter(g => g);
+                        wishlist = userData.data.wishlist.map(gameId => games.find(g => g.id === gameId)).filter(g => g);
+                        cart = userData.data.cart.map(item => ({ ...games.find(g => g.id === item.gameId), quantity: item.quantity })).filter(g => g);
+                        // Update localStorage for consistency
+                        localStorage.setItem('library', JSON.stringify(library));
+                        localStorage.setItem('wishlist', JSON.stringify(wishlist));
+                        localStorage.setItem('cart', JSON.stringify(cart));
+                    }
+                    document.getElementById('login-btn').textContent = `Hi, ${user} (Logout)`;
+                    document.getElementById('login-btn').onclick = logout;
+                    showPage('home');
+                    showNotification('Login berhasil!', 'success');
+                } else {
+                    showNotification(data.message || 'Username atau password salah!', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('Terjadi kesalahan saat login.', 'error');
+            }
+        }
+
+        // Fungsi logout
+        function logout() {
+            user = null;
+            localStorage.removeItem('user');
+            localStorage.removeItem('token');
+            localStorage.removeItem('userId');
+            // Clear user-specific data on logout
+            localStorage.removeItem('wishlist');
+            localStorage.removeItem('library');
+            localStorage.removeItem('cart');
+            wishlist = [];
+            library = [];
+            cart = [];
+            updateWishlist();
+            updateLibrary();
+            updateCart();
+            document.getElementById('login-btn').textContent = 'Login';
+            document.getElementById('login-btn').onclick = () => showPage('login');
+            showPage('home');
+            showNotification('Logout berhasil!', 'success');
+        }
+
+        // Fungsi handle register
+        function handleRegister(event) {
+            event.preventDefault();
+            const username = document.getElementById('reg-username').value;
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+            if (!username || !email || !password) {
+                showNotification('Harap isi semua field!', 'error');
+                return;
+            }
+            fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, email, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    showPage('login');
+                } else {
+                    showNotification(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Terjadi kesalahan saat registrasi.', 'error');
+            });
+        }
+
+        // Fungsi untuk cek release date
+        function checkRelease(date, filter) {
+            const year = new Date(date).getFullYear();
+            if (filter === '2020+') return year >= 2020;
+            if (filter === '2015-2019') return year >= 2015 && year <= 2019;
+            if (filter === 'before2015') return year < 2015;
+            return true;
+        }
+
+        // Fungsi filter & search
+        function filterGames() {
+            const search = document.getElementById('search').value.toLowerCase();
+            const genre = document.getElementById('filter-genre').value;
+            const price = document.getElementById('filter-price').value;
+            const platform = document.getElementById('filter-platform').value;
+            const developer = document.getElementById('filter-developer').value;
+            const rating = document.getElementById('filter-rating').value;
+            const release = document.getElementById('filter-release').value;
+            const sort = document.getElementById('sort').value;
+            filteredGames = games.filter(game => {
+                return game.name.toLowerCase().includes(search) &&
+                       (genre === '' || game.genre.includes(genre)) &&
+                       (price === '' || (price === 'free' && game.price === 0) || (price === 'paid' && game.price > 0)) &&
+                       (platform === '' || game.platform.split(', ').some(p => p.trim() === platform)) &&
+                       (developer === '' || game.developer === developer) &&
+                       (rating === '' || game.rating >= parseFloat(rating)) &&
+                       (release === '' || checkRelease(game.releaseDate, release));
+            });
+            // Sorting
+            if (sort === 'name-asc') filteredGames.sort((a, b) => a.name.localeCompare(b.name));
+            else if (sort === 'name-desc') filteredGames.sort((a, b) => b.name.localeCompare(a.name));
+            else if (sort === 'price-asc') filteredGames.sort((a, b) => a.price - b.price);
+            else if (sort === 'price-desc') filteredGames.sort((a, b) => b.price - a.price);
+            else if (sort === 'rating-desc') filteredGames.sort((a, b) => b.rating - a.rating);
+            else if (sort === 'release-desc') filteredGames.sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
+            else if (sort === 'release-asc') filteredGames.sort((a, b) => new Date(a.releaseDate) - new Date(b.releaseDate));
+            currentPage = 1;
+            displayGames();
+        }
+
+        // Fungsi menampilkan grid game dengan page
+        function displayGames() {
+            const grid = document.getElementById('game-grid');
+            if (currentPage > previousPage) {
+                grid.classList.add('slide-left');
+            } else if (currentPage < previousPage) {
+                grid.classList.add('slide-right');
+            }
+            grid.innerHTML = '';
+            const start = (currentPage - 1) * gamesPerPage;
+            const end = start + gamesPerPage;
+            const pageGames = filteredGames.slice(start, end);
+            pageGames.forEach(game => {
+                const card = document.createElement('div');
+                card.className = 'game-card';
+                card.innerHTML = `
+                    <img src="${game.img}" alt="${game.name}">
+                    <h3>${game.name}</h3>
+                    <p>Rp ${game.price || 'Gratis'}</p>
+                    <div class="rating">Rating: ${game.rating} <span class="stars">${'★'.repeat(Math.floor(game.rating))}</span></div>
+                    <button class="modal-btn" onclick="addToWishlist(games.find(g => g.id === ${game.id}))">❤️ Wishlist</button>
+                    <button class="modal-btn" onclick="addToCart(games.find(g => g.id === ${game.id}))">🛒 Cart</button>
+                    <button class="modal-btn buy-btn" onclick="buyGame(games.find(g => g.id === ${game.id}))">💰 Buy Now</button>
+                    <button onclick="viewDetail(${game.id})">View Details</button>
+                `;
+                grid.appendChild(card);
+            });
+            setTimeout(() => {
+                grid.classList.remove('slide-left', 'slide-right');
+            }, 500);
+            previousPage = currentPage;
+            renderPagination();
+        }
+
+        // Fungsi page dengan tombol advance
+        function renderPagination() {
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+            const totalPages = Math.ceil(filteredGames.length / gamesPerPage);
+            if (totalPages > 1) {
+                // Previous button
+                const prevBtn = document.createElement('button');
+                prevBtn.textContent = '«';
+                prevBtn.disabled = currentPage === 1;
+                prevBtn.onclick = () => { if (currentPage > 1) { currentPage--; displayGames(); } };
+                pagination.appendChild(prevBtn);
+
+                // Number buttons
+                const startPage = Math.max(1, currentPage - 2);
+                const endPage = Math.min(totalPages, currentPage + 2);
+                for (let i = startPage; i <= endPage; i++) {
+                    const btn = document.createElement('button');
+                    btn.textContent = i;
+                    btn.className = i === currentPage ? 'active' : '';
+                    btn.onclick = () => { currentPage = i; displayGames(); };
+                    pagination.appendChild(btn);
+                }
+
+                // Next button
+                const nextBtn = document.createElement('button');
+                nextBtn.textContent = '»';
+                nextBtn.disabled = currentPage === totalPages;
+                nextBtn.onclick = () => { if (currentPage < totalPages) { currentPage++; displayGames(); } };
+                pagination.appendChild(nextBtn);
+
+                // Page info
+                const info = document.createElement('div');
+                info.className = 'page-info';
+                info.textContent = `Page ${currentPage} of ${totalPages}`;
+                pagination.appendChild(info);
+            }
+        }
+
+        // Fungsi melihat detail di modal
+        function viewDetail(gameId) {
+            currentGame = games.find(g => g.id === gameId);
+            document.getElementById('modal-title').textContent = currentGame.name;
+            document.getElementById('modal-img').src = currentGame.img;
+            document.getElementById('modal-desc').textContent = currentGame.desc;
+            document.getElementById('modal-genre').textContent = currentGame.genre.join(', ');
+            document.getElementById('modal-developer').textContent = currentGame.developer;
+            document.getElementById('modal-releaseDate').textContent = currentGame.releaseDate;
+            document.getElementById('modal-platform').textContent = currentGame.platform;
+            document.getElementById('modal-price').textContent = currentGame.price || 'Gratis';
+            document.getElementById('modal-sysreq-min').textContent = currentGame.sysReq.min;
+            document.getElementById('modal-sysreq-rec').textContent = currentGame.sysReq.rec;
+
+            // Populate screenshots
+            const screenshotsDiv = document.querySelector('.modal-screenshots');
+            screenshotsDiv.innerHTML = '<h3>Screenshots</h3>';
+            currentGame.screenshots.forEach(src => {
+                const img = document.createElement('img');
+                img.src = src;
+                img.alt = 'Screenshot';
+                img.style.width = '100px';
+                img.style.height = '60px';
+                img.style.objectFit = 'cover';
+                img.style.borderRadius = '5px';
+                img.style.margin = '5px';
+                screenshotsDiv.appendChild(img);
+            });
+
+// Populate reviews
+            const reviewsListDiv = document.getElementById('reviews-list');
+            reviewsListDiv.innerHTML = '';
+            currentGame.reviews.forEach(review => {
+                const reviewDiv = document.createElement('div');
+                reviewDiv.className = 'modal-review';
+                reviewDiv.innerHTML = `<p><strong>${review.user}</strong> (${review.rating}/5): ${review.comment}</p>`;
+                reviewsListDiv.appendChild(reviewDiv);
+            });
+
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        // Fungsi tutup modal
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        // Fungsi add review
+        function addReview() {
+            const user = document.getElementById('review-user').value;
+            const rating = document.getElementById('review-rating').value;
+            const comment = document.getElementById('review-comment').value;
+            if (!user || !rating || !comment) {
+                showNotification('Please fill all fields.', 'error');
+                return;
+            }
+            fetch('/api/reviews', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ gameId: currentGame.id, user, rating, comment })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    currentGame.reviews = data.reviews;
+                    // Add date to new review if missing
+                    currentGame.reviews.forEach(review => {
+                        if (!review.date) review.date = new Date().toISOString();
+                    });
+                    // Reset batch and sort
+                    currentReviewsShown = reviewsPerBatch;
+                    sortReviews();
+                    // Clear form
+                    document.getElementById('review-user').value = '';
+                    document.getElementById('review-rating').value = '';
+                    document.getElementById('review-comment').value = '';
+                    showNotification('Review added successfully!', 'success');
+                } else {
+                    showNotification('Failed to add review.', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error adding review.', 'error');
+            });
+        }
+
+        // Fungsi menambah ke wishlist
+        function addToWishlist(game) {
+            const userId = localStorage.getItem('userId');
+            if (userId) {
+                fetch('/api/wishlist', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: parseInt(userId), gameId: game.id, action: 'add' })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        wishlist = data.wishlist.map(id => games.find(g => g.id === id)).filter(g => g);
+                        localStorage.setItem('wishlist', JSON.stringify(wishlist));
+                        updateWishlist();
+                        showNotification(`${game.name} ditambahkan ke wishlist!`, 'success');
+                    } else {
+                        showNotification('Failed to add to wishlist.', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Error adding to wishlist.', 'error');
+                });
+            } else {
+                if (!wishlist.find(g => g.id === game.id)) {
+                    wishlist.push(game);
+                    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+                    updateWishlist();
+                    showNotification(`${game.name} ditambahkan ke wishlist!`, 'success');
+                } else {
+                    showNotification('Sudah ada di wishlist.', 'error');
+                }
+            }
+        }
+
+        // Fungsi menambah ke cart
+        function addToCart(gameOrId) {
+            let game;
+            if (typeof gameOrId === 'number') {
+                // From wishlist, remove from wishlist
+                game = wishlist.find(g => g.id === gameOrId);
+                if (game) {
+                    wishlist = wishlist.filter(g => g.id !== gameOrId);
+                    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+                    updateWishlist();
+                }
+            } else {
+                game = gameOrId; // From modal or other places
+            }
+            if (game && !cart.find(g => g.id === game.id)) {
+                cart.push(game);
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCart();
+                showNotification(`${game.name} ditambahkan ke cart!`, 'success');
+            } else if (game) {
+                showNotification('Sudah ada di cart.', 'error');
+            }
+        }
+
+        // Fungsi membeli game
+        function buyGame(game) {
+            if (!library.find(g => g.id === game.id)) {
+                library.push(game);
+                localStorage.setItem('library', JSON.stringify(library));
+                updateLibrary();
+                showNotification(`${game.name} dibeli dan ditambahkan ke library!`, 'success');
+            } else {
+                showNotification('Sudah ada di library.', 'error');
+            }
+        }
+
+        // Fungsi update wishlist
+        function updateWishlist() {
+            const list = document.getElementById('wishlist-list');
+            list.innerHTML = '';
+            wishlist.forEach(game => {
+                const li = document.createElement('li');
+                li.innerHTML = `${game.name} - Rp ${game.price || 'Gratis'} <button onclick="addToCart(${game.id})">Add to Cart</button>`;
+                list.appendChild(li);
+            });
+        }
+
+        // Fungsi update library
+        function updateLibrary() {
+            const list = document.getElementById('library-list');
+            list.innerHTML = '';
+            library.forEach(game => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <img src="${game.img}" alt="${game.name}" style="width: 50px; height: 50px; margin-right: 10px; vertical-align: middle;">
+                    ${game.name} - Dibeli
+                    <button class="modal-btn" onclick="viewDetail(${game.id})" style="margin-left: 10px;"><i class="fas fa-eye"></i> View Details</button>
+                    <button class="modal-btn" onclick="window.open('${game.website || '#'}', '_blank')" style="margin-left: 10px;"><i class="fas fa-external-link-alt"></i> Kunjungi Website</button>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        // Fungsi update cart
+        function updateCart() {
+            const list = document.getElementById('cart-list');
+            list.innerHTML = '';
+            let total = 0;
+            cart.forEach((item, index) => {
+                const li = document.createElement('li');
+                const itemTotal = (item.price || 0) * (item.quantity || 1);
+                li.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                        <span>${item.name} - Rp ${item.price || 0} x ${item.quantity || 1} = Rp ${itemTotal}</span>
+                        <div>
+                            <button onclick="adjustQuantity(${index}, -1)">-</button>
+                            <span>${item.quantity || 1}</span>
+                            <button onclick="adjustQuantity(${index}, 1)">+</button>
+                            <button onclick="removeFromCart(${index})" style="margin-left: 10px; color: red;">Remove</button>
+                        </div>
+                    </div>
+                `;
+                list.appendChild(li);
+                total += itemTotal;
+            });
+            document.getElementById('cart-total').textContent = total;
+        }
+
+        // Fungsi adjust quantity
+        function adjustQuantity(index, delta) {
+            if (cart[index]) {
+                cart[index].quantity = (cart[index].quantity || 1) + delta;
+                if (cart[index].quantity <= 0) {
+                    cart.splice(index, 1);
+                }
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCart();
+            }
+        }
+
+        // Fungsi remove from cart
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCart();
+        }
+
+        // Fungsi checkout
+        function checkout() {
+            if (cart.length === 0) {
+                showNotification('Cart kosong!', 'error');
+            } else {
+                // Add all cart items to library
+                cart.forEach(game => {
+                    if (!library.find(g => g.id === game.id)) {
+                        library.push(game);
+                    }
+                });
+                localStorage.setItem('library', JSON.stringify(library));
+                updateLibrary();
+                showNotification(`Checkout berhasil! Total: Rp ${document.getElementById('cart-total').textContent}`, 'success');
+                cart = [];
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCart();
+            }
+        }
+
+        // Fungsi handle contact form
+        function handleContact(event) {
+            event.preventDefault();
+            const name = document.getElementById('contact-name').value;
+            const email = document.getElementById('contact-email').value;
+            const message = document.getElementById('contact-message').value;
+            // Simulasi pengiriman pesan
+            showNotification(`Terima kasih, ${name}! Pesan Anda telah dikirim. Kami akan menghubungi Anda di ${email} segera.`, 'success');
+            // Reset form
+            document.getElementById('contact-name').value = '';
+            document.getElementById('contact-email').value = '';
+            document.getElementById('contact-message').value = '';
+        }
+
+        // Fungsi toggle theme
+        function toggleTheme() {
+            const body = document.body;
+            const nav = document.querySelector('nav');
+            const themeIcon = document.querySelector('.theme-toggle i');
+            body.classList.toggle('light-mode');
+            nav.classList.toggle('light-mode');
+            if (body.classList.contains('light-mode')) {
+                themeIcon.className = 'fas fa-sun';
+            } else {
+                themeIcon.className = 'fas fa-moon';
+            }
+        }
+
+        // Fungsi menampilkan notifikasi
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Fungsi scroll to top
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Fungsi untuk menampilkan/menyembunyikan back-to-top button
+        window.onscroll = () => {
+            const backToTopBtn = document.getElementById('back-to-top');
+            if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+                backToTopBtn.style.display = 'block';
+            } else {
+                backToTopBtn.style.display = 'none';
+            }
+        };
+
+        // Fungsi change avatar
+        function changeAvatar() {
+            const newAvatar = prompt('Enter new avatar URL:');
+            if (newAvatar) {
+                const token = localStorage.getItem('token');
+                fetch('/api/avatar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': token },
+                    body: JSON.stringify({ avatar: newAvatar })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('profile-avatar').src = newAvatar;
+                        showNotification('Avatar updated!', 'success');
+                    } else {
+                        showNotification('Failed to update avatar.', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Error updating avatar.', 'error');
+                });
+            }
+        }
+
+        // Fungsi update profile
+        function updateProfile() {
+            const token = localStorage.getItem('token');
+            const userId = localStorage.getItem('userId');
+            if (!token || !userId) {
+                showPage('login');
+                return;
+            }
+            // Fetch user info
+            fetch('/api/user', {
+                headers: { 'Authorization': token }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const user = data.user;
+                    document.getElementById('profile-avatar').src = user.avatar;
+                    document.getElementById('profile-username').textContent = user.username;
+                    document.getElementById('profile-email').textContent = user.email;
+                    document.getElementById('profile-verified').textContent = user.verified ? 'Yes' : 'No';
+                    document.getElementById('profile-balance').textContent = 'Rp ' + user.balance;
+                } else {
+                    showNotification('Failed to load user data.', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error loading user data.', 'error');
+            });
+            // Fetch user data (library, etc.)
+            fetch('/api/user-data/' + userId)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const library = data.data.library;
+                    const libraryList = document.getElementById('profile-library');
+                    libraryList.innerHTML = '';
+                    library.forEach(gameId => {
+                        const game = games.find(g => g.id === gameId);
+                        if (game) {
+                            const li = document.createElement('li');
+                            li.textContent = `${game.name} - Purchased`;
+                            libraryList.appendChild(li);
+                        }
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+            // Fetch recommendations
+            fetch('/api/recommendations/' + userId)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const recommendations = data.recommendations;
+                    const recDiv = document.getElementById('recommendations');
+                    recDiv.innerHTML = '';
+                    recommendations.forEach(game => {
+                        const card = document.createElement('div');
+                        card.className = 'game-card';
+                        card.innerHTML = `
+                            <img src="${game.img}" alt="${game.name}">
+                            <h3>${game.name}</h3>
+                            <p>Rp ${game.price || 'Gratis'}</p>
+                            <div class="rating">Rating: ${game.rating} <span class="stars">${'★'.repeat(Math.floor(game.rating))}</span></div>
+                            <button class="modal-btn" onclick="addToWishlist(games.find(g => g.id === ${game.id}))">❤️ Wishlist</button>
+                            <button class="modal-btn" onclick="addToCart(games.find(g => g.id === ${game.id}))">🛒 Cart</button>
+                            <button class="modal-btn buy-btn" onclick="buyGame(games.find(g => g.id === ${game.id}))">💰 Buy Now</button>
+                            <button onclick="viewDetail(${game.id})">View Details</button>
+                        `;
+                        recDiv.appendChild(card);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        // Fungsi toggle FAQ
+        function toggleFAQ(button) {
+            const item = button.parentElement;
+            item.classList.toggle('active');
+        }
+
+        // Jalankan saat halaman dimuat
+        window.onload = () => {
+            if (user) {
+                document.getElementById('login-btn').textContent = `Hi, ${user} (Logout)`;
+                document.getElementById('login-btn').onclick = logout;
+            }
+            // Use embedded games
+            filteredGames = games;
+            populateFilters();
+            displayGames();
+            // Initialize Swiper
+            const swiper = new Swiper('.banner', {
+                loop: true,
+                autoplay: {
+                    delay: 5000,
+                    disableOnInteraction: false,
+                },
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+            });
+            // Add event listener to close modal on outside click
+            document.getElementById('modal').addEventListener('click', function(event) {
+                if (event.target === this) {
+                    closeModal();
+                }
+            });
+        };
+    </script>
+</body>
+</html>
+
+
