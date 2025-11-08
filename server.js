@@ -14,7 +14,7 @@ const JWT_SECRET = 'rskcLhzk8DgcuRKxwIEwMgFBerJpLd9wmtyIGpAKBvG'; // In producti
 // Read the HTML file at startup for Vercel compatibility
 let htmlContent;
 try {
-htmlContent = fs.readFileSync('./index.html', 'utf8');
+htmlContent = fs.readFileSync(path.join(__dirname, 'public', 'index.html'), 'utf8');
 } catch (err) {
 console.error('Error reading HTML file:', err);
 htmlContent = '<h1>File not found</h1>';
@@ -55,7 +55,8 @@ fs.writeFileSync('./userData.json', JSON.stringify(userData, null, 2));
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static('.'));
+app.use(express.static('public'));
+app.use('/images', express.static('images'));
 
 // Serve the HTML file
 app.get('/', (req, res) => {
@@ -65,6 +66,9 @@ res.send(htmlContent);
 app.get('/index.html', (req, res) => {
 res.send(htmlContent);
 });
+
+// Serve static files from public directory
+app.use(express.static('public'));
 
 let games = [
 { id: 1, name: "Fortnite", img: "fortnite.png", desc: "Game battle royale dengan elemen membangun dan aksi cepat.", genre: ["battle-royale", "shooter", "action"], price: 0, releaseDate: "2017-07-25", developer: "Epic Games", platform: "PC, PS4, Xbox", rating: 4.5, sysReq: { min: "Minimum: Windows 7, 4GB RAM, GTX 660", rec: "Recommended: Windows 10, 8GB RAM, GTX 1060" }, screenshots: ["fortnite-ss1.png", "fortnite-ss2.png"], reviews: [] },
@@ -312,5 +316,3 @@ res.status(404).json({ success: false, message: 'Game not found' });
 
 // For Vercel deployment
 module.exports = app;
-
-// For local development
