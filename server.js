@@ -41,12 +41,16 @@ userData = {};
 
 // Function to save reviews to file
 function saveReviews() {
+if (!process.env.VERCEL) {
 fs.writeFileSync(path.join(__dirname, 'reviews.json'), JSON.stringify(reviews, null, 2));
+}
 }
 
 // Function to save userData to file
 function saveUserData() {
+if (!process.env.VERCEL) {
 fs.writeFileSync(path.join(__dirname, 'userData.json'), JSON.stringify(userData, null, 2));
+}
 }
 
 // Serve the HTML file
