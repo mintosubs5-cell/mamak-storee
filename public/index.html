@@ -235,61 +235,93 @@
             margin-top: 50px;
             text-align: center;
         }
-        .social-links h3 {
+        .profile-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .profile-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 20px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+        .profile-card h3 {
             color: #fff;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             font-size: 1.5em;
             background: linear-gradient(45deg, #ff6b6b, #ee5a52);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        .social-icons {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
+        .user-info-card img {
+            display: block;
+            margin: 0 auto 15px;
+            border: 3px solid #ff6b6b;
+            transition: border-color 0.3s ease;
         }
-        .social-icon {
-            display: inline-block;
-            width: 60px;
-            height: 60px;
-            line-height: 60px;
-            text-align: center;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
+        .user-info-card img:hover {
+            border-color: #ee5a52;
+        }
+        .stats-card .badges {
+            margin-top: 15px;
+        }
+        .badges h4 {
             color: #fff;
-            font-size: 24px;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            margin-bottom: 10px;
         }
-        .social-icon:hover {
-            transform: scale(1.1) rotate(5deg);
+        .badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            margin: 5px;
+            font-size: 0.8em;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .settings-card button {
+            margin: 5px;
+            padding: 10px 15px;
+            background: linear-gradient(45deg, #333, #555);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .settings-card button:hover {
+            background: linear-gradient(45deg, #555, #777);
+            transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
-        .facebook:hover { background: linear-gradient(45deg, #1877f2, #42a5f5); border-color: #1877f2; }
-        .twitter:hover { background: linear-gradient(45deg, #1da1f2, #42a5f5); border-color: #1da1f2; }
-        .instagram:hover { background: linear-gradient(45deg, #e1306c, #f56040); border-color: #e1306c; }
-        .youtube:hover { background: linear-gradient(45deg, #ff0000, #ff4444); border-color: #ff0000; }
-        .discord:hover { background: linear-gradient(45deg, #5865f2, #7289da); border-color: #5865f2; }
-        .twitch:hover { background: linear-gradient(45deg, #9146ff, #b794f6); border-color: #9146ff; }
-
+        #change-password-form {
+            margin-top: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        #change-password-form input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            background: #333;
+            color: white;
+            border: 1px solid #555;
+            border-radius: 5px;
+        }
         @media (max-width: 768px) {
-            .contact-container {
-                flex-direction: column;
-            }
-            .contact-form-card, .contact-info-card {
-                padding: 20px;
-            }
-            .social-icons {
-                gap: 15px;
-            }
-            .social-icon {
-                width: 50px;
-                height: 50px;
-                line-height: 50px;
-                font-size: 20px;
+            .profile-container {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -1225,7 +1257,7 @@
                 li.innerHTML = `
                     <div style="display: flex; align-items: center;">
                         <img src="${game.img}" alt="${game.name}" style="width: 50px; height: 50px; margin-right: 10px;">
-                        <span> ${game.name}</span>
+                        <span>${game.name}</span>
                     </div>
                     <div>
                         <button class="modal-btn" onclick="window.open('${game.website || '#'}', '_blank')" style="margin-left: 10px;"><i class="fas fa-external-link-alt"></i> Kunjungi Website Resmi</button>
