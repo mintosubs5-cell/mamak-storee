@@ -14,7 +14,7 @@ const JWT_SECRET = 'rskcLhzk8DgcuRKxwIEwMgFBerJpLd9wmtyIGpAKBvG'; // In producti
 // Read the HTML file at startup for Vercel compatibility
 let htmlContent;
 try {
-htmlContent = fs.readFileSync(path.join(__dirname, 'public', 'index.html'), 'utf8');
+htmlContent = fs.readFileSync('./index.html', 'utf8');
 } catch (err) {
 console.error('Error reading HTML file:', err);
 htmlContent = '<h1>File not found</h1>';
@@ -55,9 +55,7 @@ fs.writeFileSync('./userData.json', JSON.stringify(userData, null, 2));
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static('public'));
-app.use(express.static('public/images'));  // Serve images at root for game images
-app.use('/images', express.static('public/images'));
+app.use(express.static('.'));
 
 // Serve the HTML file
 app.get('/', (req, res) => {
@@ -314,3 +312,5 @@ res.status(404).json({ success: false, message: 'Game not found' });
 
 // For Vercel deployment
 module.exports = app;
+
+// For local development
