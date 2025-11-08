@@ -18,9 +18,31 @@
     "password": "$2a$10$FgisWgi.f05RgshHmuWcdeGnhxLOAbVRo945BzcdhRTdwcdb4qlnm",
     "verified": true,
     "balance": 100,
-    "wishlist": [],
-    "library": [],
-    "cart": []
+    "wishlist": [
+      1,
+      5,
+      7,
+      13,
+      17,
+      28
+    ],
+    "library": [
+      2,
+      4,
+      9,
+      15,
+      19,
+      20,
+      25,
+      27
+    ],
+    "cart": [
+      3,
+      6,
+      10,
+      11,
+      21
+    ]
   },
   "3": {
     "id": 3,
