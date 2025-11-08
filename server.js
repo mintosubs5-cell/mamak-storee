@@ -1,15 +1,52 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+const mongoose = require('mongoose');
 const fs = require('fs');
 const path = require('path');
 
+const User = require('./models/User');
+const Game = require('./models/Game');
+const Review = require('./models/Review');
+
+// Load data from files for demo mode
+function loadDataFromFiles() {
+  try {
+    // Games are already defined in the array above
+    console.log('Games loaded from code');
+
+    // Load reviews from file
+    const data = fs.readFileSync(path.join(__dirname, 'reviews.json'), 'utf8').replace(/^\uFEFF/, '');
+    const fileReviews = JSON.parse(data);
+
+    // Populate games with reviews
+    games.forEach(game => {
+      game.reviews = fileReviews.filter(review => review.gameId === game.id);
+    });
+    console.log('Reviews loaded from file');
+  } catch (err) {
+    console.error('Error loading data from files:', err);
+  }
+}
+
 const app = express();
-const PORT = 8000;
-const JWT_SECRET = 'rskcLhzk8DgcuRKxwIEwMgFBerJpLd9wmtyIGpAKBvG'; // In production, use environment variable
+const PORT = process.env.PORT || 8000;
+const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/webstore', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log('Connected to MongoDB'))
+.catch(err => {
+  console.error('MongoDB connection error:', err);
+  console.log('Running in demo mode without database persistence');
+});
 
 // Middleware
 app.use(cors());
@@ -17,7 +54,7 @@ app.use(bodyParser.json());
 app.use(express.static('public'));
 app.use('/images', express.static('images'));
 
-// Load reviews from file
+// Load reviews from file (temporary for migration)
 let reviews = [];
 try {
 const data = fs.readFileSync(path.join(__dirname, 'reviews.json'), 'utf8').replace(/^\uFEFF/, '');
@@ -27,7 +64,7 @@ console.error('Error loading reviews:', err);
 reviews = [];
 }
 
-// Load userData from file
+// Load userData from file (temporary for migration)
 let userData = {};
 try {
 const data = fs.readFileSync(path.join(__dirname, 'userData.json'), 'utf8').replace(/^\uFEFF/, '');
@@ -37,16 +74,14 @@ console.error('Error loading userData:', err);
 userData = {};
 }
 
-// Users are now directly managed in userData
-
-// Function to save reviews to file
+// Function to save reviews to file (temporary)
 function saveReviews() {
 if (!process.env.VERCEL) {
 fs.writeFileSync(path.join(__dirname, 'reviews.json'), JSON.stringify(reviews, null, 2));
 }
 }
 
-// Function to save userData to file
+// Function to save userData to file (temporary)
 function saveUserData() {
 if (!process.env.VERCEL) {
 fs.writeFileSync(path.join(__dirname, 'userData.json'), JSON.stringify(userData, null, 2));
@@ -55,11 +90,11 @@ fs.writeFileSync(path.join(__dirname, 'userData.json'), JSON.stringify(userData,
 
 // Serve the HTML file
 app.get('/', (req, res) => {
-res.sendFile(path.join(__dirname, 'public', 'index.html'));
+res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.get('/index.html', (req, res) => {
-res.sendFile(path.join(__dirname, 'public', 'index.html'));
+res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 let games = [
@@ -86,14 +121,6 @@ let games = [
 { id: 21, name: "Resident Evil 4", img: "re4.png", desc: "Aksi horor bertahan hidup melawan wabah bioweapon di desa misterius.", genre: ["horror", "action", "survival"], price: 0, releaseDate: "2023-03-24", developer: "Capcom", platform: "PC, PS4, Xbox", rating: 4.7, sysReq: { min: "Minimum: Windows 10, 8GB RAM, GTX 1060", rec: "Recommended: Windows 10, 16GB RAM, RTX 2060" }, screenshots: ["re4-ss1.png", "re4-ss2.png"], reviews: [] },
 { id: 22, name: "Elden Ring", img: "eldenring.png", desc: "RPG dunia terbuka dengan pertarungan menantang dan dunia gelap.", genre: ["rpg", "action", "adventure"], price: 0, releaseDate: "2022-02-25", developer: "FromSoftware", platform: "PC, PS4, Xbox", rating: 4.8, sysReq: { min: "Minimum: Windows 10, 12GB RAM, GTX 1060", rec: "Recommended: Windows 10, 16GB RAM, RTX 2060" }, screenshots: ["eldenring-ss1.png", "eldenring-ss2.png"], reviews: [] },
 { id: 23, name: "Black Myth: Wukong", img: "wukong.png", desc: "Action RPG berdasarkan legenda Sun Wukong dengan grafis epik.", genre: ["rpg", "action", "fantasy"], price: 0, releaseDate: "2024-08-20", developer: "Game Science", platform: "PC, PS4, Xbox", rating: 4.6, sysReq: { min: "Minimum: Windows 10, 16GB RAM, RTX 2060", rec: "Recommended: Windows 10, 32GB RAM, RTX 3080" }, screenshots: ["wukong-ss1.png", "wukong-ss2.png"], reviews: [] },
-{ id: 24, name: "Dying Light", img: "dyinglight.png", desc: "Aksi parkour dan bertahan hidup di dunia penuh zombie.", genre: ["action", "horror", "survival"], price: 0, releaseDate: "2015-01-27", developer: "Techland", platform: "PC, PS4, Xbox", rating: 4.3, sysReq: { min: "Minimum: Windows 7, 4GB RAM, GTX 560", rec: "Recommended: Windows 10, 8GB RAM, GTX 1060" }, screenshots: ["dyinglight-ss1.png", "dyinglight-ss2.png"], reviews: [] },
-{ id: 25, name: "The Legend of Zelda: Ocarina of Time", img: "zelda.png", desc: "Petualangan klasik dengan eksplorasi dan teka-teki di Hyrule.", genre: ["adventure", "rpg", "fantasy"], price: 0, releaseDate: "1998-11-21", developer: "Nintendo", platform: "Nintendo 64", rating: 4.9, sysReq: { min: "N/A", rec: "N/A" }, screenshots: ["zelda-ss1.png", "zelda-ss2.png"], reviews: [] },
-{ id: 26, name: "Baldur's Gate 3", img: "bg3.png", desc: "RPG berbasis D&D dengan pilihan moral dan narasi mendalam.", genre: ["rpg", "fantasy", "story-rich"], price: 0, releaseDate: "2023-08-03", developer: "Larian Studios", platform: "PC, PS4, Xbox", rating: 4.9, sysReq: { min: "Minimum: Windows 10, 8GB RAM, GTX 1060", rec: "Recommended: Windows 10, 16GB RAM, RTX 2060" }, screenshots: ["bg3-ss1.png", "bg3-ss2.png"], reviews: [] },
-{ id: 27, name: "Uncharted 2: Among Thieves", img: "uncharted2.png", desc: "Aksi petualangan sinematik dengan kisah harta karun dan misteri.", genre: ["adventure", "action", "story-rich"], price: 0, releaseDate: "2009-10-13", developer: "Naughty Dog", platform: "PS3", rating: 4.8, sysReq: { min: "PS3 Hardware", rec: "PS3 Hardware" }, screenshots: ["uncharted2-ss1.png", "uncharted2-ss2.png"], reviews: [] },
-{ id: 28, name: "Stardew Valley", img: "stardew.png", desc: "Simulasi kehidupan dan bertani di desa yang damai.", genre: ["simulation", "casual", "farming"], price: 0, releaseDate: "2016-02-26", developer: "ConcernedApe", platform: "PC, Mobile", rating: 4.7, sysReq: { min: "Minimum: Windows Vista, 2GB RAM, Integrated Graphics", rec: "Recommended: Windows 10, 4GB RAM, GTX 650" }, screenshots: ["stardew-ss1.png", "stardew-ss2.png"], reviews: [] },
-{ id: 29, name: "Mass Effect 2", img: "masseffect2.png", desc: "RPG sci-fi dengan cerita mendalam dan pilihan yang memengaruhi jalan cerita.", genre: ["rpg", "sci-fi", "action"], price: 0, releaseDate: "2010-01-26", developer: "BioWare", platform: "PC, PS3, Xbox", rating: 4.6, sysReq: { min: "Minimum: Windows XP, 1GB RAM, GTX 260", rec: "Recommended: Windows 7, 4GB RAM, GTX 650" }, screenshots: ["masseffect2-ss1.png", "masseffect2-ss2.png"], reviews: [] },
-{ id: 30, name: "God of War: Ragnarok", img: "gowr.png", desc: "Aksi epik Kratos dan Atreus melawan para dewa Nordik.", genre: ["action", "adventure", "mythology"], price: 0, releaseDate: "2022-11-09", developer: "Santa Monica Studio", platform: "PC, PS4, PS5", rating: 4.9, sysReq: { min: "Minimum: Windows 10, 8GB RAM, GTX 1070", rec: "Recommended: Windows 10, 16GB RAM, RTX 2060" }, screenshots: ["gowr-ss1.png", "gowr-ss2.png"], reviews: [] }
-];
 
 // Helper function to generate simple token
 function generateToken() {
@@ -109,28 +136,43 @@ res.json(games);
 
 // Login
 app.post('/api/login', async (req, res) => {
+try {
 const { username, password } = req.body;
-const user = Object.values(userData).find(u => u.username === username);
+const user = await User.findOne({ username });
 if (user && await bcrypt.compare(password, user.password)) {
-const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
-res.json({ success: true, token, user: { id: user.id, username: user.username, email: user.email, avatar: user.avatar, balance: user.balance } });
+const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
+res.json({ success: true, token, user: { id: user._id, username: user.username, email: user.email, avatar: user.avatar, balance: user.balance } });
 } else {
 res.status(401).json({ success: false, message: 'Invalid credentials' });
+}
+} catch (err) {
+console.error('Login error:', err);
+res.status(500).json({ success: false, message: 'Server error' });
 }
 });
 
 // Register
 app.post('/api/register', async (req, res) => {
+try {
 const { username, email, password } = req.body;
-const existingUser = Object.values(userData).find(u => u.username === username || u.email === email);
+const existingUser = await User.findOne({ $or: [{ username }, { email }] });
 if (existingUser) {
 res.status(400).json({ success: false, message: 'User already exists' });
 } else {
 const hashedPassword = await bcrypt.hash(password, 10);
-const newId = Object.keys(userData).length + 1;
-const newUser = { id: newId, username, email, password: hashedPassword, verified: true, avatar: 'default-avatar.png', balance: 0, wishlist: [], library: [], cart: [] };
-userData[newId] = newUser;
-saveUserData();
+const newUser = new User({
+username,
+email,
+password: hashedPassword,
+verified: true,
+avatar: 'default-avatar.png',
+balance: 0,
+joinDate: new Date(),
+wishlist: [],
+library: [],
+cart: []
+});
+await newUser.save();
 // Email verification commented out for demo purposes
 // const transporter = nodemailer.createTransport({
 //     service: 'gmail',
@@ -143,7 +185,7 @@ saveUserData();
 //     from: 'your-email@gmail.com',
 //     to: email,
 //     subject: 'Email Verification',
-//     text: Please verify your email by clicking this link: http://localhost:3000/api/verify/${newUser.id}
+//     text: Please verify your email by clicking this link: http://localhost:3000/api/verify/${newUser._id}
 // };
 // transporter.sendMail(mailOptions, (error, info) => {
 //     if (error) {
@@ -153,6 +195,10 @@ saveUserData();
 //     }
 // });
 res.json({ success: true, message: 'Registration successful. Please check your email for verification.' });
+}
+} catch (err) {
+console.error('Registration error:', err);
+res.status(500).json({ success: false, message: 'Server error' });
 }
 });
 
@@ -170,118 +216,166 @@ res.status(404).send('User not found');
 });
 
 // Get user profile (requires token)
-app.get('/api/user', (req, res) => {
+app.get('/api/user', async (req, res) => {
 const token = req.headers.authorization;
 if (!token) return res.status(401).json({ success: false, message: 'No token provided' });
 try {
 const decoded = jwt.verify(token, JWT_SECRET);
 const userId = decoded.userId;
-const user = userData[userId];
+const user = await User.findById(userId);
 if (user) {
-res.json({ success: true, user: { id: user.id, username: user.username, email: user.email, avatar: user.avatar, verified: user.verified, balance: user.balance } });
+res.json({ success: true, user: { id: user._id, username: user.username, email: user.email, avatar: user.avatar, verified: user.verified, balance: user.balance } });
 } else {
 res.status(404).json({ success: false, message: 'User not found' });
 }
 } catch (err) {
-res.status(401).json({ success: false, message: 'Invalid token' });
+console.error('Get user error:', err);
+res.status(500).json({ success: false, message: 'Server error' });
 }
 });
 
 // Add/Remove from wishlist
-app.post('/api/wishlist', (req, res) => {
+app.post('/api/wishlist', async (req, res) => {
+try {
 const { userId, gameId, action } = req.body; // action: 'add' or 'remove'
-if (!userData[userId]) userData[userId] = { wishlist: [], library: [], cart: [] };
-if (action === 'add' && !userData[userId].wishlist.includes(gameId)) {
-userData[userId].wishlist.push(gameId);
+const user = await User.findById(userId);
+if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+if (action === 'add' && !user.wishlist.includes(gameId)) {
+user.wishlist.push(gameId);
 } else if (action === 'remove') {
-userData[userId].wishlist = userData[userId].wishlist.filter(id => id !== gameId);
+user.wishlist = user.wishlist.filter(id => id !== gameId);
 }
-saveUserData();
-res.json({ success: true, wishlist: userData[userId].wishlist });
+await user.save();
+res.json({ success: true, wishlist: user.wishlist });
+} catch (err) {
+console.error('Wishlist error:', err);
+res.status(500).json({ success: false, message: 'Server error' });
+}
 });
 
 // Add/Remove/Update cart
-app.post('/api/cart', (req, res) => {
+app.post('/api/cart', async (req, res) => {
+try {
 const { userId, gameId, action, quantity } = req.body; // action: 'add', 'remove', 'update'
-if (!userData[userId]) userData[userId] = { wishlist: [], library: [], cart: [] };
-const cartItem = userData[userId].cart.find(item => item.gameId === gameId);
+const user = await User.findById(userId);
+if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+const cartItem = user.cart.find(item => item.gameId === gameId);
 if (action === 'add') {
 if (cartItem) {
 cartItem.quantity += quantity || 1;
 } else {
-userData[userId].cart.push({ gameId, quantity: quantity || 1 });
+user.cart.push({ gameId, quantity: quantity || 1 });
 }
 } else if (action === 'remove') {
-userData[userId].cart = userData[userId].cart.filter(item => item.gameId !== gameId);
+user.cart = user.cart.filter(item => item.gameId !== gameId);
 } else if (action === 'update') {
 if (cartItem) {
 cartItem.quantity = quantity;
 if (cartItem.quantity <= 0) {
-userData[userId].cart = userData[userId].cart.filter(item => item.gameId !== gameId);
+user.cart = user.cart.filter(item => item.gameId !== gameId);
 }
 }
 }
-res.json({ success: true, cart: userData[userId].cart });
+await user.save();
+res.json({ success: true, cart: user.cart });
+} catch (err) {
+console.error('Cart error:', err);
+res.status(500).json({ success: false, message: 'Server error' });
+}
 });
 
 // Add to library (purchase)
-app.post('/api/library', (req, res) => {
+app.post('/api/library', async (req, res) => {
+try {
 const { userId, gameId } = req.body;
-if (!userData[userId]) userData[userId] = { wishlist: [], library: [], cart: [] };
-if (!userData[userId].library.includes(gameId)) {
-userData[userId].library.push(gameId);
+const user = await User.findById(userId);
+if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+if (!user.library.includes(gameId)) {
+user.library.push(gameId);
 // Remove from cart if present
-userData[userId].cart = userData[userId].cart.filter(item => item.gameId !== gameId);
+user.cart = user.cart.filter(item => item.gameId !== gameId);
+await user.save();
 }
-saveUserData();
-res.json({ success: true, library: userData[userId].library });
+res.json({ success: true, library: user.library });
+} catch (err) {
+console.error('Library error:', err);
+res.status(500).json({ success: false, message: 'Server error' });
+}
 });
 
 // Get user data
-app.get('/api/user-data/:userId', (req, res) => {
-const userId = req.params.userId;
-if (userData[userId]) {
-    const user = userData[userId];
+app.get('/api/user-data/:userId', async (req, res) => {
+try {
+const user = await User.findById(req.params.userId);
+if (user) {
     // Populate cart with full game data
     const populatedCart = user.cart.map(cartItem => {
         const game = games.find(g => g.id === cartItem.gameId);
         return game ? { ...cartItem, game } : cartItem;
     });
-    res.json({ success: true, data: { ...user, cart: populatedCart } });
+    res.json({ success: true, data: { wishlist: user.wishlist, library: user.library, cart: populatedCart } });
 } else {
-res.json({ success: true, data: { wishlist: [], library: [], cart: [] } });
+res.status(404).json({ success: false, message: 'User not found' });
+}
+} catch (err) {
+console.error('Get user data error:', err);
+res.status(500).json({ success: false, message: 'Server error' });
 }
 });
 
 // Update user avatar
-app.post('/api/avatar', (req, res) => {
+app.post('/api/avatar', async (req, res) => {
 const token = req.headers.authorization;
 if (!token) return res.status(401).json({ success: false, message: 'No token provided' });
 try {
 const decoded = jwt.verify(token, JWT_SECRET);
 const userId = decoded.userId;
 const { avatar } = req.body;
-const user = userData[userId];
+const user = await User.findById(userId);
 if (user) {
 user.avatar = avatar;
-saveUserData();
+await user.save();
 res.json({ success: true, avatar });
 } else {
 res.status(404).json({ success: false, message: 'User not found' });
 }
 } catch (err) {
-res.status(401).json({ success: false, message: 'Invalid token' });
+console.error('Avatar update error:', err);
+res.status(500).json({ success: false, message: 'Server error' });
+}
+});
+
+// Change password
+app.post('/api/change-password', async (req, res) => {
+const token = req.headers.authorization;
+if (!token) return res.status(401).json({ success: false, message: 'No token provided' });
+try {
+const decoded = jwt.verify(token, JWT_SECRET);
+const userId = decoded.userId;
+const { currentPassword, newPassword } = req.body;
+const user = await User.findById(userId);
+if (user && await bcrypt.compare(currentPassword, user.password)) {
+const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+user.password = hashedNewPassword;
+await user.save();
+res.json({ success: true, message: 'Password changed successfully' });
+} else {
+res.status(400).json({ success: false, message: 'Current password is incorrect' });
+}
+} catch (err) {
+console.error('Change password error:', err);
+res.status(500).json({ success: false, message: 'Server error' });
 }
 });
 
 // Get recommendations for user
-app.get('/api/recommendations/:userId', (req, res) => {
-const userId = parseInt(req.params.userId);
-const userInfo = userData[userId];
-if (!userInfo) return res.json({ success: true, recommendations: [] });
+app.get('/api/recommendations/:userId', async (req, res) => {
+try {
+const user = await User.findById(req.params.userId);
+if (!user) return res.json({ success: true, recommendations: [] });
 
 const userGenres = new Set();
-const userGames = [...userInfo.library, ...userInfo.wishlist];
+const userGames = [...user.library, ...user.wishlist];
 userGames.forEach(gameId => {
     const game = games.find(g => g.id === gameId);
     if (game) game.genre.forEach(genre => userGenres.add(genre));
@@ -293,24 +387,61 @@ const recommendations = games.filter(game =>
 ).slice(0, 5); // Limit to 5 recommendations
 
 res.json({ success: true, recommendations });
+} catch (err) {
+console.error('Recommendations error:', err);
+res.status(500).json({ success: false, message: 'Server error' });
+}
 });
 
 // Add review
-app.post('/api/reviews', (req, res) => {
+app.post('/api/reviews', async (req, res) => {
+try {
 const { gameId, user, rating, comment } = req.body;
 const game = games.find(g => g.id === parseInt(gameId));
 if (game) {
-const userObj = Object.values(userData).find(u => u.username === user);
+const userObj = await User.findOne({ username: user });
 const avatar = userObj ? userObj.avatar : 'default-avatar.png';
-const newReview = { gameId: parseInt(gameId), user, rating: parseFloat(rating), comment, date: new Date().toISOString(), avatar };
-game.reviews.push(newReview);
-reviews.push(newReview);
+const newReview = new Review({
+gameId: parseInt(gameId),
+user,
+rating: parseFloat(rating),
+comment,
+date: new Date(),
+avatar
+});
+await newReview.save();
+game.reviews.push({
+gameId: parseInt(gameId),
+user,
+rating: parseFloat(rating),
+comment,
+date: newReview.date.toISOString(),
+avatar
+});
+reviews.push({
+gameId: parseInt(gameId),
+user,
+rating: parseFloat(rating),
+comment,
+date: newReview.date.toISOString(),
+avatar
+});
 saveReviews();
 res.json({ success: true, reviews: game.reviews });
 } else {
 res.status(404).json({ success: false, message: 'Game not found' });
 }
+} catch (err) {
+console.error('Add review error:', err);
+res.status(500).json({ success: false, message: 'Server error' });
+}
 });
 
 // For Vercel deployment
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
 module.exports = app;
