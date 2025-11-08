@@ -1225,10 +1225,10 @@
                 li.innerHTML = `
                     <div style="display: flex; align-items: center;">
                         <img src="${game.img}" alt="${game.name}" style="width: 50px; height: 50px; margin-right: 10px;">
-                        <span>${game.name} - Dibeli</span>
+                        <span> ${game.name}</span>
                     </div>
                     <div>
-                        <button class="modal-btn" onclick="window.open('${game.website || '#'}', '_blank')" style="margin-left: 10px;"><i class="fas fa-external-link-alt"></i> Kunjungi Website</button>
+                        <button class="modal-btn" onclick="window.open('${game.website || '#'}', '_blank')" style="margin-left: 10px;"><i class="fas fa-external-link-alt"></i> Kunjungi Website Resmi</button>
                         <button class="modal-btn" onclick="viewDetail(${game.id})" style="margin-left: 10px;"><i class="fas fa-eye"></i> View Details</button>
                     </div>
                 `;
