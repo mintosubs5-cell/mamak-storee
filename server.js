@@ -11,14 +11,11 @@ const app = express();
 const PORT = 8000;
 const JWT_SECRET = 'rskcLhzk8DgcuRKxwIEwMgFBerJpLd9wmtyIGpAKBvG'; // In production, use environment variable
 
-// Read the HTML file at startup for Vercel compatibility
-let htmlContent;
-try {
-htmlContent = fs.readFileSync(path.join(__dirname, 'public', 'index.html'), 'utf8');
-} catch (err) {
-console.error('Error reading HTML file:', err);
-htmlContent = '<h1>File not found</h1>';
-}
+// Middleware
+app.use(cors());
+app.use(bodyParser.json());
+app.use(express.static('public'));
+app.use('/images', express.static('images'));
 
 // Load reviews from file
 let reviews = [];
@@ -52,23 +49,14 @@ function saveUserData() {
 fs.writeFileSync('./userData.json', JSON.stringify(userData, null, 2));
 }
 
-// Middleware
-app.use(cors());
-app.use(bodyParser.json());
-app.use(express.static('public'));
-app.use('/images', express.static('images'));
-
 // Serve the HTML file
 app.get('/', (req, res) => {
-res.send(htmlContent);
+res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.get('/index.html', (req, res) => {
-res.send(htmlContent);
+res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
-
-// Serve static files from public directory
-app.use(express.static('public'));
 
 let games = [
 { id: 1, name: "Fortnite", img: "fortnite.png", desc: "Game battle royale dengan elemen membangun dan aksi cepat.", genre: ["battle-royale", "shooter", "action"], price: 0, releaseDate: "2017-07-25", developer: "Epic Games", platform: "PC, PS4, Xbox", rating: 4.5, sysReq: { min: "Minimum: Windows 7, 4GB RAM, GTX 660", rec: "Recommended: Windows 10, 8GB RAM, GTX 1060" }, screenshots: ["fortnite-ss1.png", "fortnite-ss2.png"], reviews: [] },
